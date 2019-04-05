@@ -1,0 +1,8 @@
+C:\Users\antho\source\repos\Beaver\Beaver\bin\Beaver.dll
+C:\Users\antho\source\repos\Beaver\Beaver\bin\Beaver.pdb
+C:\Users\antho\source\repos\Beaver\Beaver\obj\Debug\Beaver.csprojAssemblyReference.cache
+C:\Users\antho\source\repos\Beaver\Beaver\obj\Debug\Beaver.csproj.CoreCompileInputs.cache
+C:\Users\antho\source\repos\Beaver\Beaver\obj\Debug\Beaver.dll
+C:\Users\antho\source\repos\Beaver\Beaver\obj\Debug\Beaver.pdb
+C:\Users\antho\source\repos\Beaver\Beaver\obj\Debug\Beaver.Properties.Resources.resources
+C:\Users\antho\source\repos\Beaver\Beaver\obj\Debug\Beaver.csproj.GenerateResource.cache
