@@ -1189,6 +1189,8 @@ namespace Beaver
 
     }
 
+  
+
     public class Gcode  //Gcode compiler and checker, contain collection of path...........................................................
     {
         readonly public List<string> line = new List<string>();  //lines of code
