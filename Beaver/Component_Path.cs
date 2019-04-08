@@ -346,7 +346,7 @@ namespace BeaverGrasshopper
         /// </summary>
         public PathPolyline()
           : base("Polyline Path", "PathPolyline",
-              "Create tool path from polyline",
+              "Create tool path from polyline??",
               "Beaver", "Path")
         {
         }
