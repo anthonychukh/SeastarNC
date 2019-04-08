@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -577,8 +578,11 @@ namespace Beaver
             T = _toolIndex;
         }
 
-        public Block(Arc _arc, double _feedRate, double _ES, int _toolIndex) //..........arc move
+        
+
+        public Block(Point3d? _centre, Arc _arc, double _feedRate, double _ES, int _toolIndex) //..........arc move
         {
+            coordinate = _centre;
             arc = _arc;
             F = _feedRate;
             ES = _ES;
@@ -642,7 +646,7 @@ namespace Beaver
         public Path(List<Block> _wayPoints) //..............construct path from way points
         {
             this.blocks = _wayPoints;
-
+           
             int nowStarti = -1;
             do
             {
@@ -717,7 +721,7 @@ namespace Beaver
 
         public void Add(Path _path) // .....................add path behind current path
         {
-            this.Insert(_path, this.blocks.Count - 1);
+            this.Insert(_path, this.blocks.Count);
         }
 
         public void Insert(Block _block, int i)
@@ -753,40 +757,43 @@ namespace Beaver
 
         public void Insert(Path _path, int i)
         {
-            blocks.InsertRange(i, _path.blocks);
+            
 
-            if (startCoori.HasValue && _path.startCoori.HasValue) //if this path and add path has coor
+            if (startCoori.HasValue && _path.startCoori.HasValue) //if this path and add path has coor, adjust start/end coor
             {
-                if (i < endCoori && i > startCoori) //
+                if (i < endCoori && i > startCoori) //path is added in middle
                 {
                     endCoori += _path.blocks.Count;
                 }
-                if (i < startCoori)
+                if (i <= startCoori)                 //path is added at beginning
                 {
                     startCoori = _path.startCoori;
-                    endCoori += _path.blocks.Count;
+                    endCoori += (_path.blocks.Count -1);
                 }
-                if(i > endCoori)
+                if (i == endCoori)                    //path is added at end
                 {
+                    //Debug.WriteLine("path count = "+ this.blocks.Count.ToString());
                     endCoori = this.blocks.Count + _path.endCoori;
                 }
             }
-            if(!startCoori.HasValue && _path.startCoori.HasValue)
+            if (!startCoori.HasValue && _path.startCoori.HasValue)
             {
                 this.startCoori = i + _path.startCoori;
                 this.endCoori = i + _path.endCoori;
             }
             if (this.startCoori.HasValue && !_path.startCoori.HasValue)
             {
-                if(i < this.endCoori)
+                if (i < this.endCoori)
                 {
                     endCoori += _path.blocks.Count;
                 }
-                if(i < this.startCoori)
+                if (i < this.startCoori)
                 {
                     startCoori += _path.blocks.Count;
                 }
             }
+
+            blocks.InsertRange(i, _path.blocks);
         }
 
         public Interval FeedRange()
@@ -837,30 +844,34 @@ namespace Beaver
             return esRange;
         }
 
-        public bool Join(Path _other, double _tolerance, bool _preserveDirection) //............................join two path if path touch, flip direction if need
+        public bool Join(Path _other, double _tolerance, bool _preserveDirection) //............................join one path to other if path touch, flip direction if need
         {
             bool success = false;
 
             if (this.startCoori != null && _other.startCoori != null)
             {
-                Point3d nowStart = new Point3d(this.blocks[this.startCoori.Value].coordinate.Value);
-                Point3d nowEnd = new Point3d(this.blocks[this.endCoori.Value].coordinate.Value);
-                Point3d nextStart = new Point3d(_other.blocks[_other.startCoori.Value].coordinate.Value);
-                Point3d nextEnd = new Point3d(_other.blocks[_other.endCoori.Value].coordinate.Value);
+
+                Point3d nowStart = this.StartCoor;
+                Point3d nowEnd = this.EndCoor;
+                Point3d nextStart = _other.StartCoor;
+                Point3d nextEnd = _other.EndCoor;
 
                 if (nowStart.DistanceTo(nextEnd) < _tolerance)//add path in front
                 {
+                    this.blocks.RemoveAt(0);
                     this.Insert(_other, 0);
                     success = true;
                 }
                 if (nowEnd.DistanceTo(nextStart) < _tolerance)//add path behind
                 {
+                    this.blocks.RemoveAt(this.endCoori.Value);
                     this.Add(_other);
                     success = true;
                 }
                 if (nowStart.DistanceTo(nextStart) < _tolerance && !_preserveDirection)//flip and add path in front
                 {
                     _other.Flip();
+                    this.blocks.RemoveAt(0);
                     this.Insert(_other, 0);
                     success = true;
                 }
@@ -868,6 +879,7 @@ namespace Beaver
                 if (nowEnd.DistanceTo(nextEnd) < _tolerance && !_preserveDirection)//flip and add path behind
                 {
                     _other.Flip();
+                    this.blocks.RemoveAt(this.endCoori.Value);
                     this.Add(_other);
                     success = true;
                 }
@@ -896,216 +908,260 @@ namespace Beaver
             }
         }
 
-        public static List<Path> Join(List<Path> _paths, double _tolerance, bool _preserveDirection)  //........join Multiple paths , need add function to arc
+        public static List<Path> Join(List<Path> _paths, double _tolerance, bool _preserveDirection)
         {
+            System.Diagnostics.Debug.WriteLine("\njoin begins");
             List<Path> pathsOut = new List<Path>(); //Output collection of paths. the active/current path to add to
             List<Path> pathsIn = new List<Path>(_paths);//make a copy of _paths. find the next path in here to add to PathOut
             {
                 int x = pathsIn.Count; //remaining path count
                 int j = 0; //current join curve counter
-                int f = 0; //flip warning
                 int d = 0; //debug
+                bool terminate = false;
                 pathsOut.Add(new Path(pathsIn[0])); //add first path
                 pathsIn.RemoveAt(0);
                 do
                 {
                     x = pathsIn.Count;
+                    System.Diagnostics.Debug.WriteLine("run do loop");
                     for (int i = 0; i < x; i++)
                     {
-                        if(!pathsOut[j].startCoori.HasValue || !pathsOut[j].endCoori.HasValue)  //current path does not contain coordinate, just add next
+                        bool joinSuccess = pathsOut[j].Join(pathsIn[i], _tolerance, _preserveDirection);
+                        if (joinSuccess)
                         {
-                            pathsOut[j].Add(pathsIn[i]);
                             pathsIn.RemoveAt(i);
-                            x--;
+                            System.Diagnostics.Debug.WriteLine("join once");
                             break;
+                            
                         }
-
-                        if (!pathsIn[i].startCoori.HasValue || !pathsIn[i].endCoori.HasValue)  //next path does not contain coordinate, just add next
+                        if(!joinSuccess && i == x-1)//reach end of list without finindg partner
                         {
-                            pathsOut[j].Add(pathsIn[i]);
-                            pathsIn.RemoveAt(i);
-                            x--;
-                            break;
-                        }
-
-                        /*Point3d nowStart = new Point3d(paths[0].blocks[0].coordinate.Value);
-                        Point3d nowEnd = new Point3d(paths[0].blocks[paths[0].blocks.Count - 1].coordinate.Value);
-                        Point3d nextStart = new Point3d(paths[i].blocks[0].coordinate.Value);
-                        Point3d nextEnd = new Point3d(paths[i].blocks[paths[i].blocks.Count - 1].coordinate.Value);*/
-
-                        //Point3d nowStart = new Point3d(pathsOut[j].blocks[pathsOut[j].startCoori.Value].coordinate.Value);
-                        //Point3d nowEnd = new Point3d(pathsOut[j].blocks[pathsOut[j].endCoori.Value].coordinate.Value);
-                        //Point3d nextStart = new Point3d(pathsIn[i].blocks[pathsIn[i].startCoori.Value].coordinate.Value);
-                        //Point3d nextEnd = new Point3d(pathsIn[i].blocks[pathsIn[i].endCoori.Value].coordinate.Value);
-
-                        Point3d nowStart = pathsOut[j].StartCoor;
-                        Point3d nowEnd = pathsOut[j].EndCoor;
-                        Point3d nextStart = pathsIn[i].StartCoor;
-                        Point3d nextEnd = pathsIn[i].EndCoor;
-
-                        if (nowStart.DistanceTo(nextEnd) < _tolerance)//add path in front
-                        {
-                            pathsOut[j].blocks.RemoveAt(0); //remove overlap 
-                            pathsOut[j].Insert(pathsIn[i], 0);
-                            pathsIn.RemoveAt(i); //remove from input list
-                            x--;
-                            break;
-                        }
-                        if (nowEnd.DistanceTo(nextStart) < _tolerance)//add path behind
-                        {
-                            pathsOut[j].blocks.RemoveAt(pathsOut[j].blocks.Count - 1);
-                            pathsOut[j].Add(pathsIn[i]);
-                            pathsIn.RemoveAt(i);
-                            x--;
-                            break;
-                        }
-                        if (nowStart.DistanceTo(nextStart) < _tolerance && !_preserveDirection)//flip and add path in front
-                        {
-                            //pathsOut[j].blocks.RemoveAt(0);
-                            pathsIn[i].Flip();
-                            pathsOut[j].Insert(pathsIn[i], 0);
-                            pathsIn.RemoveAt(i);
-                            x--;
-                            f++;
-                            break;
-                        }
-                        if (nowEnd.DistanceTo(nextEnd) < _tolerance && !_preserveDirection)//flip and add path behind
-                        {
-                            //pathsOut[j].blocks.RemoveAt(pathsOut[j].blocks.Count - 1);
-                            pathsIn[i].Flip();
-                            pathsOut[j].Add(pathsIn[i]);
-                            pathsIn.RemoveAt(i);
-                            x--;
-                            f++;
-                            break;
-                        }
-                        else
-                        {
-                            j++; //no more adjacent paths. 
-                            if (pathsIn.Count > 0)
+                            pathsOut.Add(new Path(pathsIn[0]));
+                            j++;
+                            System.Diagnostics.Debug.WriteLine("no more adjacent curve");
+                            if (x == 1)//also not more next curve to add
                             {
-                                pathsOut.Add(pathsIn[i]); //Start new path
-                                pathsIn.RemoveAt(i);
-                                x--;
-                            }
-                            break;
-                        }
-                        d++;
-
-                    }
-
-                } while (x>1 && pathsIn.Count > 1 && d< 100000);
-                
-            }
-            return pathsOut;
-        }
-
-        public static List<Path> Join2(List<Path> _paths, double _tolerance, bool _preserveDirection)  //.......join multiple paths together
-        {
-            List<Path> p = new List<Path>(); //Output collection of paths
-            List<Path> paths = new List<Path>(_paths);//make a copy of _paths
-            {
-                int x = paths.Count; //remaining path count
-                int j = 0; //current join curve counter
-                int f = 0; //flip warning
-                int d = 0; //debug
-                p.Add(new Path(paths[0]));
-                do
-                {
-                    for(int i = 0; i < x; i++)
-                    {
-                        //now path index------------------------------------------------------------------
-                        int nowStarti = 0;
-                        do 
-                        {
-                            nowStarti++;
-                        } while (!paths[0].blocks[nowStarti].coordinate.HasValue && nowStarti < paths[0].blocks.Count);
-
-                        if (nowStarti == paths[0].blocks.Count - 1)  //does not contain coordinate, just add to path
-                        {
-                            p[j].blocks.AddRange(paths[0].blocks);
-                            paths.RemoveAt(0);
-                            break;
-                        }
-
-                        int nowEndi = paths[0].blocks.Count - 1;
-                        do
-                        {
-                            nowEndi--;
-                        } while (!paths[0].blocks[nowEndi].coordinate.HasValue && nowEndi > 0);
-
-                        //next path index index---------------------------------------------------------------------------
-                        int nextStarti = 0;
-                        do
-                        {
-                            nextStarti++;
-                        } while (!paths[i].blocks[nextStarti].coordinate.HasValue && nextStarti < paths[i].blocks.Count);
-
-                        if (nextStarti == paths[i].blocks.Count - 1)  //does not contain coordinate, just add to path
-                        {
-                            p[j].blocks.AddRange(paths[i].blocks);
-                            paths.RemoveAt(i);
-                            break;
-                        }
-
-                        int nextEndi = paths[i].blocks.Count - 1;
-                        do
-                        {
-                            nextEndi--;
-                        } while (!paths[i].blocks[nextEndi].coordinate.HasValue && nextEndi > 0);
-
-                        
-                            Point3d nowStart = new Point3d(paths[0].blocks[0].coordinate.Value);
-                            Point3d nowEnd = new Point3d(paths[0].blocks[paths[0].blocks.Count - 1].coordinate.Value);
-                            Point3d nextStart = new Point3d(paths[i].blocks[0].coordinate.Value);
-                            Point3d nextEnd = new Point3d(paths[i].blocks[paths[i].blocks.Count - 1].coordinate.Value);
-
-                            if (nowStart.DistanceTo(nextEnd) < _tolerance)//add path in front
-                            {
-                                p[j].blocks.RemoveAt(0); //remove overlap point
-                                p[j].blocks.InsertRange(0, paths[i].blocks); //insert at front
-                                paths.RemoveAt(i); //remove from input list
-                                x--;
-                            }
-                            if (nowEnd.DistanceTo(nextStart) < _tolerance)//add path behind
-                            {
-                                p[j].blocks.RemoveAt(p[j].blocks.Count - 1);
-                                p[j].blocks.AddRange(paths[i].blocks);
-                                paths.RemoveAt(i);
-                                x--;
-                            }
-                            if (nowStart.DistanceTo(nextStart) < _tolerance && !_preserveDirection)//flip and add path in front
-                            {
-                                p[j].blocks.RemoveAt(0);
-                                paths[i].blocks.Reverse();
-                                p[j].blocks.InsertRange(0, paths[i].blocks);
-                                paths.RemoveAt(i);
-                                x--;
-                                f++;
-                            }
-                            if (nowEnd.DistanceTo(nextEnd) < _tolerance && !_preserveDirection)//flip and add path behind
-                            {
-                                p[j].blocks.RemoveAt(p[j].blocks.Count - 1);
-                                paths[i].blocks.Reverse();
-                                p[j].blocks.AddRange(paths[i].blocks);
-                                paths.RemoveAt(i);
-                                x--;
-                                f++;
+                                d = 10001;//terminate
+                                terminate = false;
+                                Debug.WriteLine("terminate join");
                             }
                             else
                             {
-                                j++; //no more adjacent paths. 
-                                p.Add(new Path(paths[0])); //Start new path
+                                
                             }
-                            d++;
-                        
+                            pathsIn.RemoveAt(0);
+                        }
                     }
+                    d++;
                     
-                } while (x>0 && d < 100000);
-                
+
+                } while (x > 0 && pathsIn.Count > 0 && !terminate && d < 10000);
             }
-            return p;
+            System.Diagnostics.Debug.WriteLine("finished joining\n....");
+            return pathsOut;
         }
+    
+
+        //public static List<Path> JoinOld(List<Path> _paths, double _tolerance, bool _preserveDirection)  //........join Multiple paths , need add function to arc
+        //{
+        //    List<Path> pathsOut = new List<Path>(); //Output collection of paths. the active/current path to add to
+        //    List<Path> pathsIn = new List<Path>(_paths);//make a copy of _paths. find the next path in here to add to PathOut
+        //    {
+        //        int x = pathsIn.Count; //remaining path count
+        //        int j = 0; //current join curve counter
+        //        int f = 0; //flip warning
+        //        int d = 0; //debug
+        //        pathsOut.Add(new Path(pathsIn[0])); //add first path
+        //        pathsIn.RemoveAt(0);
+        //        do
+        //        {
+        //            //x = pathsIn.Count;
+        //            for (int i = 0; i < x; i++)
+        //            {
+        //                if(!pathsOut[j].startCoori.HasValue || !pathsOut[j].endCoori.HasValue)  //current path does not contain coordinate, just add next
+        //                {
+        //                    pathsOut[j].Add(pathsIn[i]);
+        //                    pathsIn.RemoveAt(i);
+        //                    x--;
+        //                    break;
+        //                }
+
+        //                if (!pathsIn[i].startCoori.HasValue || !pathsIn[i].endCoori.HasValue)  //next path does not contain coordinate, just add next
+        //                {
+        //                    pathsOut[j].Add(pathsIn[i]);
+        //                    pathsIn.RemoveAt(i);
+        //                    x--;
+        //                    break;
+        //                }
+
+        //                Point3d nowStart = pathsOut[j].StartCoor;
+        //                Point3d nowEnd = pathsOut[j].EndCoor;
+        //                Point3d nextStart = pathsIn[i].StartCoor;
+        //                Point3d nextEnd = pathsIn[i].EndCoor;
+
+        //                if (nowStart.DistanceTo(nextEnd) < _tolerance)//add path in front
+        //                {
+        //                    //pathsOut[j].blocks.RemoveAt(0); //remove overlap 
+        //                    pathsOut[j].Insert(pathsIn[i], 0);
+        //                    pathsIn.RemoveAt(i); //remove from input list
+        //                    x--;
+        //                    break;
+        //                }
+        //                if (nowEnd.DistanceTo(nextStart) < _tolerance)//add path behind
+        //                {
+        //                    //pathsOut[j].blocks.RemoveAt(pathsOut[j].blocks.Count - 1);
+        //                    pathsOut[j].Add(pathsIn[i]);
+        //                    pathsIn.RemoveAt(i);
+        //                    x--;
+        //                    break;
+        //                }
+        //                if (nowStart.DistanceTo(nextStart) < _tolerance && !_preserveDirection)//flip and add path in front
+        //                {
+        //                    //pathsOut[j].blocks.RemoveAt(0);
+        //                    pathsIn[i].Flip();
+        //                    pathsOut[j].Insert(pathsIn[i], 0);
+        //                    pathsIn.RemoveAt(i);
+        //                    x--;
+        //                    f++;
+        //                    break;
+        //                }
+        //                if (nowEnd.DistanceTo(nextEnd) < _tolerance && !_preserveDirection)//flip and add path behind
+        //                {
+        //                    //pathsOut[j].blocks.RemoveAt(pathsOut[j].blocks.Count - 1);
+        //                    pathsIn[i].Flip();
+        //                    pathsOut[j].Add(pathsIn[i]);
+        //                    pathsIn.RemoveAt(i);
+        //                    x--;
+        //                    f++;
+        //                    break;
+        //                }
+        //                else
+        //                {
+        //                    j++; //no more adjacent paths. 
+        //                    if (pathsIn.Count > 0)
+        //                    {
+        //                        pathsOut.Add(pathsIn[i]); //Start new path
+        //                        pathsIn.RemoveAt(i);
+        //                        x--;
+        //                    }
+        //                    break;
+        //                }
+        //                //d++;
+
+        //            }
+
+        //        } while (x>1 && pathsIn.Count > 1 && d< 100000);
+                
+        //    }
+        //    return pathsOut;
+        //}
+
+        //public static List<Path> JoinOld2(List<Path> _paths, double _tolerance, bool _preserveDirection)  //.......join multiple paths together
+        //{
+        //    List<Path> p = new List<Path>(); //Output collection of paths
+        //    List<Path> paths = new List<Path>(_paths);//make a copy of _paths
+        //    {
+        //        int x = paths.Count; //remaining path count
+        //        int j = 0; //current join curve counter
+        //        int f = 0; //flip warning
+        //        int d = 0; //debug
+        //        p.Add(new Path(paths[0]));
+        //        do
+        //        {
+        //            for(int i = 0; i < x; i++)
+        //            {
+        //                //now path index------------------------------------------------------------------
+        //                int nowStarti = 0;
+        //                do 
+        //                {
+        //                    nowStarti++;
+        //                } while (!paths[0].blocks[nowStarti].coordinate.HasValue && nowStarti < paths[0].blocks.Count);
+
+        //                if (nowStarti == paths[0].blocks.Count - 1)  //does not contain coordinate, just add to path
+        //                {
+        //                    p[j].blocks.AddRange(paths[0].blocks);
+        //                    paths.RemoveAt(0);
+        //                    break;
+        //                }
+
+        //                int nowEndi = paths[0].blocks.Count - 1;
+        //                do
+        //                {
+        //                    nowEndi--;
+        //                } while (!paths[0].blocks[nowEndi].coordinate.HasValue && nowEndi > 0);
+
+        //                //next path index index---------------------------------------------------------------------------
+        //                int nextStarti = 0;
+        //                do
+        //                {
+        //                    nextStarti++;
+        //                } while (!paths[i].blocks[nextStarti].coordinate.HasValue && nextStarti < paths[i].blocks.Count);
+
+        //                if (nextStarti == paths[i].blocks.Count - 1)  //does not contain coordinate, just add to path
+        //                {
+        //                    p[j].blocks.AddRange(paths[i].blocks);
+        //                    paths.RemoveAt(i);
+        //                    break;
+        //                }
+
+        //                int nextEndi = paths[i].blocks.Count - 1;
+        //                do
+        //                {
+        //                    nextEndi--;
+        //                } while (!paths[i].blocks[nextEndi].coordinate.HasValue && nextEndi > 0);
+
+                        
+        //                    Point3d nowStart = new Point3d(paths[0].blocks[0].coordinate.Value);
+        //                    Point3d nowEnd = new Point3d(paths[0].blocks[paths[0].blocks.Count - 1].coordinate.Value);
+        //                    Point3d nextStart = new Point3d(paths[i].blocks[0].coordinate.Value);
+        //                    Point3d nextEnd = new Point3d(paths[i].blocks[paths[i].blocks.Count - 1].coordinate.Value);
+
+        //                    if (nowStart.DistanceTo(nextEnd) < _tolerance)//add path in front
+        //                    {
+        //                        p[j].blocks.RemoveAt(0); //remove overlap point
+        //                        p[j].blocks.InsertRange(0, paths[i].blocks); //insert at front
+        //                        paths.RemoveAt(i); //remove from input list
+        //                        x--;
+        //                    }
+        //                    if (nowEnd.DistanceTo(nextStart) < _tolerance)//add path behind
+        //                    {
+        //                        p[j].blocks.RemoveAt(p[j].blocks.Count - 1);
+        //                        p[j].blocks.AddRange(paths[i].blocks);
+        //                        paths.RemoveAt(i);
+        //                        x--;
+        //                    }
+        //                    if (nowStart.DistanceTo(nextStart) < _tolerance && !_preserveDirection)//flip and add path in front
+        //                    {
+        //                        p[j].blocks.RemoveAt(0);
+        //                        paths[i].blocks.Reverse();
+        //                        p[j].blocks.InsertRange(0, paths[i].blocks);
+        //                        paths.RemoveAt(i);
+        //                        x--;
+        //                        f++;
+        //                    }
+        //                    if (nowEnd.DistanceTo(nextEnd) < _tolerance && !_preserveDirection)//flip and add path behind
+        //                    {
+        //                        p[j].blocks.RemoveAt(p[j].blocks.Count - 1);
+        //                        paths[i].blocks.Reverse();
+        //                        p[j].blocks.AddRange(paths[i].blocks);
+        //                        paths.RemoveAt(i);
+        //                        x--;
+        //                        f++;
+        //                    }
+        //                    else
+        //                    {
+        //                        j++; //no more adjacent paths. 
+        //                        p.Add(new Path(paths[0])); //Start new path
+        //                    }
+        //                    d++;
+                        
+        //            }
+                    
+        //        } while (x>0 && d < 100000);
+                
+        //    }
+        //    return p;
+        //}
 
         public static List<Path> Bridge(List<Path> _paths)  //..................................bridge and join path in order of Path list
         {
