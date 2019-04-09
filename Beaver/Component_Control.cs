@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
 namespace BeaverGrasshopper
 {
-    //public class SerialPortWrapper
-    //{
-    //    public SerialPort SerialPort;
-    //    public string PortName;
-    //    public bool DataIn;
-    //    public string PortMsg;
-    //    public int Braudrate;
-    //    public bool IsOpen => SerialPort.IsOpen;
+    public class SerialPortWrapper
+    {
+        public SerialPort SerialPort;
+        public string PortName;
+        public bool DataIn;
+        public string PortMsg;
+        public int Braudrate;
+        public bool IsOpen => SerialPort.IsOpen;
 
-    //    public SerialPortWrapper()
-    //    {
-    //        this.SerialPort = null;
-    //        PortName = "";
-
-    //    }
-    //}
+        public SerialPortWrapper()
+        {
+            this.SerialPort = null;
+            PortName = "";
+        }
+    }
 
     //public SerialPortWrapper myPort = new SerialPortWrapper();
 
@@ -36,7 +36,7 @@ namespace BeaverGrasshopper
         /// </summary>
         public Component_Control()
           : base("Machine Control", "Control",
-              "Send command to the machine",
+              "Send command to the machine??",
               "Beaver", "Control")
         {
         }
@@ -76,24 +76,34 @@ namespace BeaverGrasshopper
             DA.GetData(2, ref braud);
             DA.GetDataList<string>(3, lines);
 
+            
             SerialPort port = new SerialPort(name, braud, Parity.None, 8, StopBits.One);
             port.DtrEnable = true;
             if (!port.IsOpen && start)
             {
                 port.Open();
+                message.Add("Port open");
+                Debug.WriteLine("port open");
             }
             if (start)
             {
                 for (int i = 0; i < lines.Count; i++)
                 {
                     port.Write(lines[i]);
+                    Debug.WriteLine("port write line");
                 }
                 port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                 DA.SetDataList(1, myReceivedLines);
             }
+            if(!start && port.IsOpen)
+            {
+                port.Close();
+                Debug.WriteLine("port closed");
+            }
         }
 
         List<string> myReceivedLines = new List<string>();
+        List<string> message = new List<string>();
 
         private void DataReceivedHandler(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {

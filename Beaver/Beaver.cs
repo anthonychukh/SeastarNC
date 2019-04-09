@@ -643,6 +643,17 @@ namespace Beaver
         public int? endCoori;
         public Color DefaultColor = Color.Red;
 
+        public Path(Block _block)
+        {
+            this.blocks = new List<Block>();
+            this.blocks.Add(_block);
+            if (_block.coordinate.HasValue)
+            {
+                startCoori = 0;
+                endCoori = 0;
+            }
+        }
+
         public Path(List<Block> _wayPoints) //..............construct path from way points
         {
             this.blocks = _wayPoints;

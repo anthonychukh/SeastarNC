@@ -11,6 +11,44 @@ using Rhino.Geometry;
 
 namespace BeaverGrasshopper
 {
+
+    public class PathPoint : GH_Component
+    {
+        public PathPoint()
+          : base("Path Point", "PathPioint",
+              "Create Path block from point",
+              "Beaver", "Path")
+        {
+        }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.AddNumberParameter("Extrusion Width", "EW", "Extrusion Width", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Layer Height", "LH", "Layer Height", GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.AddNumberParameter("Extrusion Rate", "ER", "Extrusion Rate in mm/min", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            double EW = 0;
+            double LH = 0;
+            DA.GetData<double>(0, ref EW);
+            DA.GetData<double>(1, ref LH);
+
+            DA.SetData(0, EW * LH);
+        }
+
+        protected override System.Drawing.Bitmap Icon => Resources.joker;
+
+        public override Guid ComponentGuid
+        {
+            get { return new Guid("3e925ed6-e163-47e6-8f85-c6aa41994cf9"); }
+        }
+    }
     public class PathPolylinePrint : GH_Component
     {
         /// <summary>
@@ -356,8 +394,9 @@ namespace BeaverGrasshopper
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddCurveParameter("Path Curve", "C", "Curve representing tool path", GH_ParamAccess.item);
-            //pManager.AddPointParameter("Way Point", "P", "Way points of tool path", GH_ParamAccess.list);
+            //pManager.AddCurveParameter("Path Curve", "C", "Curve representing tool path", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Path Geometry", "P", "Geometry to convert to Path\nInput curves or points", GH_ParamAccess.item);
+
             pManager.AddVectorParameter("Tool Orientation", "V", "Orientation of tool as vector\nInput one value or values matching polyline point count" +
                 "This is only for 4+ axis machine, leave empty for 3 axis machine", GH_ParamAccess.list, new Vector3d(Vector3d.ZAxis * -1));
             pManager.AddNumberParameter("Feed Rate", "F", "Feed rate to get to this way point" +
@@ -437,81 +476,85 @@ namespace BeaverGrasshopper
             Config cfg = new Config();
             bool IsPrint;
 
+           Debug.WriteLine(this.Params.Input[0].Sources[0].TypeName);
+
             Curve crv = new PolyCurve();
-            DA.GetData<Curve>("Path Curve", ref crv);
-            bool goOnPl = crv.TryGetPolyline(out pl);
-            bool goOnArc = crv.TryGetArc(out arc);
-            bool goOnCir = crv.TryGetCircle(out cir);
-            //int step = 0;
-
-
-            if (goOnPl)
+                        
+            if (this.Params.Input[0].Sources[0].TypeName.Equals("Curve"))
             {
+                DA.GetData<Curve>(0, ref crv);
+                bool goOnPl = crv.TryGetPolyline(out pl);
+                bool goOnArc = crv.TryGetArc(out arc);
+                bool goOnCir = crv.TryGetCircle(out cir);
+                //int step = 0;
 
-                bool planar = crv.TryGetPlane(out Plane pTemp);
-                bool flatXY = (pTemp.ZAxis.IsParallelTo(Vector3d.ZAxis) != 0);
-
-                pCrv = crv;
-                DA.GetDataList<Vector3d>(1, dir);
-                DA.GetDataList<double>(2, F);
-
-                if (this.Params.Input[3].SourceCount > 0) //extrusion rate
+                if (goOnPl)
                 {
-                    ES.Clear();
-                    DA.GetDataList<double>(3, ES);
-                    IsPrint = true;
 
-                }
-                if (this.Params.Input[4].SourceCount > 0) //spindle speed
-                {
-                    ES.Clear();
-                    DA.GetDataList<double>(4, ES);
-                    IsPrint = false;
-                }
-               
-                DA.GetDataList<int>(5, T);
+                    bool planar = crv.TryGetPlane(out Plane pTemp);
+                    bool flatXY = (pTemp.ZAxis.IsParallelTo(Vector3d.ZAxis) != 0);
 
-                //.....check input.........................
-                if(this.Params.Input[3].SourceCount >0 && this.Params.Input[4].SourceCount > 0)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Only input either E or S but not both");
-                    return;
-                }
-                if ((F.Count != pl.Count && F.Count != 1) || (T.Count != pl.Count && T.Count != 1))
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "F or T does not match vertices count. These number represent info to reach the point on the path including starting point\n" +
-                        "ie. Count should equal to vertices count\n" +
-                        "Or input one value for all vertices");
-                    return;
-                }
-                if (ES.Count != pl.Count && ES.Count != 1)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "E or S does not match vertices count. These number represent info to reach the point on the path including starting point\n" +
-                        "ie. Count should equal to vertices count\n" +
-                        "Or input one value for all vertices");
-                    Debug.WriteLine("ESCount " + ES.Count.ToString());
-                    return;
-                }
+                    pCrv = crv;
+                    DA.GetDataList<Vector3d>(1, dir);
+                    DA.GetDataList<double>(2, F);
 
-                List<Block> wayPoints = new List<Block>();
+                    if (this.Params.Input[3].SourceCount > 0) //extrusion rate
+                    {
+                        ES.Clear();
+                        DA.GetDataList<double>(3, ES);
+                        IsPrint = true;
 
-                //set waypoint value...............................
-                for (int i = 0; i < pl.Count; i++) 
-                {
-                    Vector3d eachDir;
-                    double eachF;
-                    double? eachES;
-                    //double? eachS;
-                    int eachT;
+                    }
+                    if (this.Params.Input[4].SourceCount > 0) //spindle speed
+                    {
+                        ES.Clear();
+                        DA.GetDataList<double>(4, ES);
+                        IsPrint = false;
+                    }
 
-                    if (dir.Count == 1) { eachDir = dir[0]; }
-                    else { eachDir = dir[i]; }
-                    if (F.Count == 1) { eachF = F[0]; }
-                    else { eachF = F[i]; }
-                    if (T.Count == 1) { eachT = T[0]; }
-                    else { eachT = T[i]; }
+                    DA.GetDataList<int>(5, T);
 
-                    
+                    //.....check input.........................
+                    if (this.Params.Input[3].SourceCount > 0 && this.Params.Input[4].SourceCount > 0)
+                    {
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Only input either E or S but not both");
+                        return;
+                    }
+                    if ((F.Count != pl.Count && F.Count != 1) || (T.Count != pl.Count && T.Count != 1))
+                    {
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "F or T does not match vertices count. These number represent info to reach the point on the path including starting point\n" +
+                            "ie. Count should equal to vertices count\n" +
+                            "Or input one value for all vertices");
+                        return;
+                    }
+                    if (ES.Count != pl.Count && ES.Count != 1)
+                    {
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "E or S does not match vertices count. These number represent info to reach the point on the path including starting point\n" +
+                            "ie. Count should equal to vertices count\n" +
+                            "Or input one value for all vertices");
+                        Debug.WriteLine("ESCount " + ES.Count.ToString());
+                        return;
+                    }
+
+                    List<Block> wayPoints = new List<Block>();
+
+                    //set waypoint value...............................
+                    for (int i = 0; i < pl.Count; i++)
+                    {
+                        Vector3d eachDir;
+                        double eachF;
+                        double? eachES;
+                        //double? eachS;
+                        int eachT;
+
+                        if (dir.Count == 1) { eachDir = dir[0]; }
+                        else { eachDir = dir[i]; }
+                        if (F.Count == 1) { eachF = F[0]; }
+                        else { eachF = F[i]; }
+                        if (T.Count == 1) { eachT = T[0]; }
+                        else { eachT = T[i]; }
+
+
                         if (ES.Count == 1)
                         {
                             if (ES[0] != 0)
@@ -525,92 +568,126 @@ namespace BeaverGrasshopper
                         }
                         else { eachES = ES[i]; }
 
-                    
 
 
-                    wayPoints.Add(new Block(pl[i], eachDir, eachF, eachES, eachT));
 
-                }
+                        wayPoints.Add(new Block(pl[i], eachDir, eachF, eachES, eachT));
 
-                Path path = new Path(wayPoints);
+                    }
 
-                fRange = path.FeedRange();
-                if (ES.Count == 1 && ES[0] == 0) {
-                    
-                }
-                else
-                {
-                    eRange = path.ESRange();
-                }
-                PathOut = path;
+                    Path path = new Path(wayPoints);
+
+                    fRange = path.FeedRange();
+                    if (ES.Count == 1 && ES[0] == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        eRange = path.ESRange();
+                    }
+                    PathOut = path;
 
 
-                //cross check Config..................
-                if (this.Params.Input[6].SourceCount > 0)
-                {
+                    //cross check Config..................
+                    if (this.Params.Input[6].SourceCount > 0)
+                    {
 
-                }
+                    }
 
                     DA.SetData(0, path);
-                DA.SetData(1, fRange);
-                DA.SetData(2, eRange);
-                DA.SetData(3, wayPoints.Count);
+                    DA.SetData(1, fRange);
+                    DA.SetData(2, eRange);
+                    DA.SetData(3, wayPoints.Count);
+                }
+
+
+                if (goOnArc)
+                {
+                    //List<double> fList = new List<double>();
+
+                    DA.GetDataList<Vector3d>(1, dir);
+                    DA.GetDataList<double>(2, F);
+
+                    if (this.Params.Input[3].SourceCount > 0) //extrusion rate
+                    {
+                        DA.GetDataList<double>(3, ES);
+                        IsPrint = true;
+
+                    }
+                    if (this.Params.Input[4].SourceCount > 0) //spindle speed
+                    {
+                        DA.GetDataList<double>(4, ES);
+                        IsPrint = false;
+                    }
+                    else
+                    {
+                        ES.Add(0); //just travel move
+                    }
+                    DA.GetDataList<int>(5, T);
+
+                    //.....check input.........................
+                    if (this.Params.Input[3].SourceCount > 0 && this.Params.Input[4].SourceCount > 0)
+                    {
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Only input either E or S but not both");
+                        return;
+                    }
+                    if ((F.Count != 1) || (ES.Count != 1) || (T.Count != 1))
+                    {
+                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "F or E or T does not match arc count.");
+                        return;
+                    }
+
+                    Block arcMove = new Block(arc.Center, arc, F[0], ES[0], T[0]);
+                    DA.SetData(0, arcMove);
+                    //Path path = new Path()
+                }
+                //if (goOnCir)
+                //{
+
+                //}
+
+                //else
+                //{
+                //    this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Provide polyline, arc or circle for input C");
+                //}
             }
-           
+            
 
-            if (goOnArc)
+            Point3d pt = new Point3d();
+            
+            if (this.Params.Input[0].Sources[0].TypeName.Equals("Point"))
             {
-                //List<double> fList = new List<double>();
-
+                DA.GetData<Point3d>(0, ref pt);
                 DA.GetDataList<Vector3d>(1, dir);
                 DA.GetDataList<double>(2, F);
 
                 if (this.Params.Input[3].SourceCount > 0) //extrusion rate
                 {
+                    ES.Clear();
                     DA.GetDataList<double>(3, ES);
                     IsPrint = true;
-
                 }
                 if (this.Params.Input[4].SourceCount > 0) //spindle speed
                 {
+                    ES.Clear();
                     DA.GetDataList<double>(4, ES);
                     IsPrint = false;
                 }
-                else
-                {
-                    ES.Add(0); //just travel move
-                }
+
                 DA.GetDataList<int>(5, T);
 
-                //.....check input.........................
-                if (this.Params.Input[3].SourceCount > 0 && this.Params.Input[4].SourceCount > 0)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Only input either E or S but not both");
-                    return;
-                }
-                if ((F.Count != 1) || (ES.Count != 1) || (T.Count != 1))
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "F or E or T does not match arc count.");
-                    return;
-                }
-
-                Block arcMove = new Block(arc.Center, arc, F[0], ES[0], T[0]);
-                DA.SetData(0, arcMove);
-                //Path path = new Path()
+                Block blk = new Block(pt, dir[0], F[0], ES[0], T[0]);
+                Path pth = new Path(blk);
+                PathOut = pth;
+                DA.SetData(0, pth);
+                Debug.WriteLine("created path from point");
             }
-            //if (goOnCir)
-            //{
-
-            //}
-
-            //else
-            //{
-            //    this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Provide polyline, arc or circle for input C");
-            //}
         }
 
         public Path PathOut;
         public Curve pCrv;
+        //public Point3d pPt;
         public Point3d parkPosition = new Point3d(0, 0, 0);
         public Interval fRange;
         public Interval eRange;
@@ -627,18 +704,32 @@ namespace BeaverGrasshopper
             {
                 Point3d lastPt = PathOut.StartCoor;
                 Color c = Color.Red;
-
-                for (int i = 0; i < PathOut.blocks.Count; i++)
+                if (PathOut.blocks.Count > 1)
                 {
-                    if (PathOut.blocks[i].coordinate.HasValue)
+                    for (int i = 0; i < PathOut.blocks.Count; i++)
                     {
-                        args.Display.DrawLine(lastPt, PathOut.blocks[i].coordinate.Value, c);
-                        lastPt = PathOut.blocks[i].coordinate.Value;
+                        if (PathOut.blocks[i].coordinate.HasValue)
+                        {
+                            args.Display.DrawLine(lastPt, PathOut.blocks[i].coordinate.Value, c);
+                            lastPt = PathOut.blocks[i].coordinate.Value;
+                        }
+                        else
+                        {
+                            string text = PathOut.blocks[i].GetGCode(false);
+                            args.Display.DrawDot(lastPt, text, c, PathOut.DefaultColor);
+                        }
+                    }
+                }
+                else
+                {
+                    if (PathOut.blocks[0].coordinate.HasValue)
+                    {
+                        args.Display.DrawPoint(PathOut.blocks[0].coordinate.Value, c);
                     }
                     else
                     {
-                        string text = PathOut.blocks[i].GetGCode(false);
-                        args.Display.DrawDot(lastPt, text, Color.Red, PathOut.DefaultColor);
+                        string text = PathOut.blocks[0].GetGCode(false);
+                        args.Display.DrawDot(lastPt, text, c, PathOut.DefaultColor);
                     }
                 }
             }
