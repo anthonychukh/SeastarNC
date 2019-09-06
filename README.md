@@ -1,6 +1,6 @@
 # BeaverNC
 
-Seastar, formerly known as Beaver is a library written for Rhino Common and Grasshopper for 3d printer control.
+Seastar, formerly known as Beaver, is a library written for Rhino Common and Grasshopper for real-time 3d printer control.
 
 
 It support real-time connection between Grasshopper and open-source 3D printing firmware.
