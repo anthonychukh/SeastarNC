@@ -9,18 +9,18 @@ A protoype was created by modifying an Anycubic Linear Plus Delta printer with a
 
 
 Seastar could be used for:
-*enabling the usage of 3D printers as robotic arm system.
-*connecting to other functions with grasshopper. eg. Firefly sensors.
-*custom tool path planning for 3d printing and milling.
+ * enabling the usage of 3D printers as robotic arm system.
+ * connecting to other functions with grasshopper. eg. Firefly sensors.
+ * custom tool path planning for 3d printing and milling.
 
 
 There are 6 main catergory of component:
-*Config:   Read ini file from slicer software and extract existing parameter
-*Machine:  Create machines objects with information of dimension and rotational axes configuration
-*Path:	   Create path objects and provide means of manipulation. eg. join, insert	
-*File:     Save file for offline use
-*Control:  Real-time connection to 3d printer. Automatically queue and send command
-*Sim:      Visualization of tool path
+ * Config:   Read ini file from slicer software and extract existing parameter
+ * Machine:  Create machines objects with information of dimension and rotational axes configuration
+ * Path:	   Create path objects and provide means of manipulation. eg. join, insert	
+ * File:     Save file for offline use
+ * Control:  Real-time connection to 3d printer. Automatically queue and send command
+ * Sim:      Visualization of tool path
 
 
 
