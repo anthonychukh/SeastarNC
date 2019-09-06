@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\build\OpenCvSharp3-AnyCPU.props" Condition="Exists('..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\build\OpenCvSharp3-AnyCPU.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -13,6 +14,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +35,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Firefly.Bridge">
+      <HintPath>..\..\..\AppData\Roaming\Grasshopper\Libraries\Firefly.Bridge.dll</HintPath>
+    </Reference>
+    <Reference Include="Melanchall.DryWetMidi, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Melanchall.DryWetMidi.4.1.0\lib\net45\Melanchall.DryWetMidi.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\lib\net40\OpenCvSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Blob, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\lib\net40\OpenCvSharp.Blob.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\lib\net40\OpenCvSharp.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.UserInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\lib\net40\OpenCvSharp.UserInterface.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -56,12 +77,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Beaver.cs" />
+    <Compile Include="Component_Control.cs" />
+    <Compile Include="Component_midi.cs" />
+    <Compile Include="Component_Sim.cs" />
+    <Compile Include="Component_CV.cs" />
     <Compile Include="Component_Config.cs" />
     <Compile Include="BeaverInfo.cs" />
-    <Compile Include="Beaver.cs" />
     <Compile Include="Component_File.cs" />
     <Compile Include="Component_Path.cs" />
-    <Compile Include="Component_Control.cs" />
+    <Compile Include="Component_Control2.cs" />
     <Compile Include="Component_Machine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -77,10 +102,55 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\1f0cf.bmp" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\configExtruder.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\simSim.png" />
+    <None Include="Resources\simPreview.png" />
+    <None Include="Resources\pathTranslte.png" />
+    <None Include="Resources\pathPinIO.png" />
+    <None Include="Resources\pathMill.png" />
+    <None Include="Resources\pathM.png" />
+    <None Include="Resources\pathJoin.png" />
+    <None Include="Resources\pathInsert.png" />
+    <None Include="Resources\pathGcode.png" />
+    <None Include="Resources\pathExtru.png" />
+    <None Include="Resources\fileSave.png" />
+    <None Include="Resources\fileOpen.png" />
+    <None Include="Resources\fileDate.png" />
+    <None Include="Resources\createSPM.png" />
+    <None Include="Resources\createMill.png" />
+    <None Include="Resources\createMach.png" />
+    <None Include="Resources\createExtruder.png" />
+    <None Include="Resources\cntQueue.png" />
+    <None Include="Resources\cntLog.png" />
+    <None Include="Resources\cntConnect.png" />
+    <None Include="Resources\cfgSave%402x.png" />
+    <None Include="Resources\cfgSave.png" />
+    <None Include="Resources\cfgOpen%402x.png" />
+    <None Include="Resources\cfgOpen.png" />
+    <None Include="Resources\cfgMill%402x.png" />
+    <None Include="Resources\cfgMill.png" />
+    <None Include="Resources\cfgMac%402x.png" />
+    <None Include="Resources\cfgMac.png" />
+    <None Include="Resources\cfgFila%402x.png" />
+    <None Include="Resources\cfgFila.png" />
+    <None Include="Resources\cfgExtruder%402x.png" />
+    <None Include="Resources\Asset 4.png" />
+    <None Include="Resources\configExtruder2.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Artboard 1 copyaxon%4024.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Seastar_24.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -103,4 +173,10 @@ Erase "$(TargetPath)"</PostBuildEvent>
     </StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\build\OpenCvSharp3-AnyCPU.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCvSharp3-AnyCPU.4.0.0.20181129\build\OpenCvSharp3-AnyCPU.props'))" />
+  </Target>
 </Project>

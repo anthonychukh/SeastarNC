@@ -14,18 +14,18 @@ namespace BeaverGrasshopper
         public FileSaver()
           : base("File Saver", "FileSave",
               "Save text file to a location and extension",
-              "Beaver", "File")
+              "Seastar" , "04 | File")
         {
         }
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddTextParameter("File Path", "path", "File path to save to", GH_ParamAccess.item);
-            pManager.AddTextParameter("File Name", "name", "File name", GH_ParamAccess.item);
-            pManager.AddTextParameter("File Extension", "ext", "File extension", GH_ParamAccess.item);
+            pManager.AddTextParameter("File Path", "path", "File path to save to", GH_ParamAccess.item, @"C:\Users\antho\Google Drive (anthony@space10.io)\Kai-Hong Anthony Chu\Seastar\testGcode");
+            pManager.AddTextParameter("File Name", "name", "File name", GH_ParamAccess.item, "test");
+            pManager.AddTextParameter("File Extension", "ext", "File extension", GH_ParamAccess.item, ".gcode");
             pManager.AddTextParameter("Lines of text", "lines", "Lines of text to write", GH_ParamAccess.list);
-            pManager.AddBooleanParameter("Overwrite file?", "overwrite", "True to overwrite file\nFalse to save incrementally", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("Write file", "write", "True to write file\nConnect to button", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Overwrite file?", "overwrite", "True to overwrite file\nFalse to save incrementally", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("Write file", "write", "True to write file\nConnect to button", GH_ParamAccess.item, false);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -52,7 +52,7 @@ namespace BeaverGrasshopper
             DA.SetData(0, msg);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.fileSave;
 
         public override Guid ComponentGuid
         {
@@ -65,7 +65,7 @@ namespace BeaverGrasshopper
         public FileDate()
           : base("File Name by Date", "FileDate",
               "File name in format of YYMMDD",
-              "Beaver", "File")
+              "Seastar", "04 | File")
         {
         }
 
@@ -111,7 +111,7 @@ namespace BeaverGrasshopper
             DA.SetData(3, yy + mm + dd);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.fileDate;
 
         public override Guid ComponentGuid
         {
@@ -124,7 +124,7 @@ namespace BeaverGrasshopper
         public FileSaver()
           : base("File Saver", "FileSave",
               "Save text file to a location and extension",
-              "Beaver", "File")
+              "Beaver", "04 | File")
         {
         }
 

@@ -121,4 +121,85 @@
   <data name="joker2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\1f0cf.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="cfgFila" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cfgFila.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cfgMac" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cfgMac.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cfgMill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cfgMill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cfgOpen" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cfgOpen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cfgSave" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cfgSave.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cntConnect" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cntConnect.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cntLog" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cntLog.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cntQueue" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cntQueue.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="configExtruder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Asset 4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="createExtruder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\createExtruder.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="createMach" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\createMach.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="createMill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\createMill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="createSPM" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\createSPM.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fileDate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fileDate.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fileOpen" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fileOpen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fileSave" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fileSave.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathExtru" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathExtru.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathGcode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathGcode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathInsert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathInsert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathJoin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathJoin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathM" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathM.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathMill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathMill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathPinIO" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathPinIO.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathTranslte" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathTranslte.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="simPreview" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\simPreview.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="simSim" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\simSim.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Seastar_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Seastar_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

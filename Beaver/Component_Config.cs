@@ -15,7 +15,7 @@ using System.Drawing;
 // folder in Grasshopper.
 // You can use the _GrasshopperDeveloperSettings Rhino command for that.
 
-namespace BeaverGrasshopper
+namespace SeastarGrasshopper
 {
     public class ConfigINI : GH_Component
     {
@@ -29,7 +29,7 @@ namespace BeaverGrasshopper
         public ConfigINI()
           : base(".ini Configuration File", "ConfigINI",
               "Open slic3r configuration bundle from .ini file and select configuration",
-              "Beaver", "Config")
+              "Seastar", "01 | Config")
         {
         }
 
@@ -192,7 +192,7 @@ namespace BeaverGrasshopper
             }
         }*/
 
-        protected override Bitmap Icon => Resources.joker;
+        protected override Bitmap Icon => Beaver.Properties.Resources.cfgOpen;
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
@@ -217,7 +217,7 @@ namespace BeaverGrasshopper
         public ConfigPrint()
           : base("Print Configuration", "ConfigPrint",
               "Set Print Configuration from .ini and/or sliders",
-              "Beaver", "Config")
+              "Seastar", "01 | Config")
         {
         }
 
@@ -240,7 +240,7 @@ namespace BeaverGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Printer", "printer", "Beaver Printer Object", 0);
+            pManager.AddGenericParameter("Printer", "printer", "Seastar Printer Object", 0);
             pManager.AddTextParameter("Configuration", "config", "Modified configuration string", GH_ParamAccess.list);
         }
 
@@ -282,15 +282,7 @@ namespace BeaverGrasshopper
         /// Provides an Icon for every component that will be visible in the User Interface.
         /// Icons need to be 24x24 pixels.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon
-        {
-            get
-            {
-                // You can add image files to your project resources and access them like this:
-                //return Resources.IconForThisComponent;
-                return null;
-            }
-        }
+        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.configExtruder;
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
@@ -308,7 +300,7 @@ namespace BeaverGrasshopper
         public ConfigFilament()
           : base("Filament Configuration", "ConfigFilament",
               "Set filament configuration from .ini and/or sliders",
-              "Beaver", "Config")
+              "Seastar", "01 | Config")
         {
         }
 
@@ -317,6 +309,7 @@ namespace BeaverGrasshopper
             for (int i = 0; i < Enum.GetNames(typeof(Config.FilamentSetting)).Length; i++)
             {
                 string name = Enum.GetName(typeof(Config.FilamentSetting), i);
+                
                 pManager.AddNumberParameter(name, name, name, GH_ParamAccess.item, 0);
             }
             pManager.AddTextParameter("Configuration", "config", "Configuration inherited from previous", GH_ParamAccess.list);
@@ -348,7 +341,7 @@ namespace BeaverGrasshopper
             DA.SetDataList("Configuration", cfgOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgFila;
 
         public override Guid ComponentGuid
         {
@@ -361,7 +354,7 @@ namespace BeaverGrasshopper
         public ConfigPrinter()
           : base("Printer Configuration", "ConfigPrinter",
               "Set Printer configuration from .ini and/or sliders",
-              "Beaver", "Config")
+              "Seastar", "01 | Config")
         {
         }
 
@@ -401,7 +394,7 @@ namespace BeaverGrasshopper
             DA.SetDataList("Configuration", cfgOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgMac;
 
         public override Guid ComponentGuid
         {
@@ -414,7 +407,7 @@ namespace BeaverGrasshopper
         public ConfigRouter()
           : base("Router Configuration", "ConfigRouter",
               "Set Router configuration from .ini and/or sliders",
-              "Beaver", "Config")
+              "Seastar", "01 | Config")
         {
         }
 
@@ -454,7 +447,7 @@ namespace BeaverGrasshopper
             DA.SetDataList("Configuration", cfgOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgMill;
 
         public override Guid ComponentGuid
         {
@@ -467,7 +460,7 @@ namespace BeaverGrasshopper
         public ConfigGetSetting()
           : base("Get Setting", "ConfigGetSetting",
               "Retreive a specific setting from config",
-              "Beaver", "Config")
+              "Seastar", "01 | Config")
         {
         }
 
@@ -528,7 +521,7 @@ namespace BeaverGrasshopper
         public ConfigSaveINI()
           : base("Save Configuration", "ConfigSaveINI",
               "Save configuration to .ini file",
-              "Beaver", "Config")
+              "Seastar", "01 | Config")
         {
         }
 
@@ -565,7 +558,7 @@ namespace BeaverGrasshopper
             DA.SetData(0, msg);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgSave;
 
         public override Guid ComponentGuid
         {

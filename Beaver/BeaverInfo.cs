@@ -11,15 +11,14 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return "Beaver";
+                return "Seastar";
             }
         }
         public override Bitmap Icon
         {
             get
             {
-                //Return a 24x24 pixel bitmap to represent this GHA library.
-                return null;
+                return Beaver.Properties.Resources.Seastar_24;
             }
         }
         public override string Description
@@ -27,7 +26,7 @@ namespace BeaverGrasshopper
             get
             {
                 //Return a short string describing the purpose of this GHA library.
-                return "Convert Rhino Curves into GCode for 3D printing and CNC routing";
+                return "Convert Rhino Curves into GCode and provide real-time control of 3D printer";
             }
         }
         public override Guid Id
