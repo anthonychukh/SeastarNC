@@ -7,7 +7,7 @@ SeastarNC support real-time connection between Grasshopper and open-source 3D pr
 This project was made possible by the generous support of SPACE10 through a research residency program in summer 2019.  
 A protoype was created by modifying an Anycubic Linear Plus Delta printer with additional 3 rotational axes.  
 
-<img src = "Beaver/Resources/photo/AT0A3840.jpg" height = 800>
+<img src = "Beaver/Resources/photo/AT0A3840.jpg" height = 500>
   
 **Installation:**  
  * Go to SeastarNC/Beaver/bin and download Beaver.gha .
@@ -36,7 +36,7 @@ To run the Demo files, you'll need to install Firefly and ghowl.
 Use SeastarNC with Repetier6X(https://github.com/anthonychukh/Repetier6X) or other 6-axis firmware.  
   
 This long-exposure stop motion was created with Seastar.
-<img src = "Beaver/Resources/photo/S10spin.gif" height = 600>
+<img src = "Beaver/Resources/photo/S10spin.gif" height = 500>
 
 ---
 SeastarNC is released under MIT License.
