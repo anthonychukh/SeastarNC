@@ -18,7 +18,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return Beaver.Properties.Resources.Seastar_24;
+                return Seastar.Properties.Resources.Seastar_24;
             }
         }
         public override string Description

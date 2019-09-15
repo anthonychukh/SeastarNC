@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Beaver;
+using Seastar;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
@@ -106,7 +106,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.createMach;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.createMach;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -188,7 +188,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.createExtruder;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.createExtruder;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -304,7 +304,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.createMill;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.createMill;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -452,9 +452,9 @@ namespace SeastarGrasshopper
             //msg += s1.angleCHome.ToString();
             //msg += "\n";
 
-            DA.SetDataTree(0, s1.LinkArc());
-            DA.SetDataTree(1, axes);
-            DA.SetDataList("Initial Angle", ial);
+            DA.SetDataTree(2, s1.LinkArc());
+            DA.SetDataTree(3, axes);
+            DA.SetDataList("Rotational Input", ial);
             DA.SetData("SPM Axes", new RotationAxes(s1));
             DA.SetData("Offset Plane", s1.targetPlane);
             DA.SetData("Mounting Plane", s1.mountPlane);
@@ -525,7 +525,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.createSPM;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.createSPM;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.

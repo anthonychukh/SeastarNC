@@ -19,33 +19,32 @@ using static System.Math;
 /*
  * READ ME
  * 
- * Seastar, formerly known as Beaver is a library written for Rhino Common and Grasshopper for 3d printer control
+ * Seastar, formerly known as Beaver, is a library written for Rhino Common and Grasshopper for 3d printer control
  * It support real-time connection between Grasshopper and open-source 3D printing firmware
  * This project was made possible by the generous support of SPACE10 through a research resident program in summer 2019
  * 
  * 
  * -------------------Disclaimer--------------------------
- * This library and Grasshopper plugin was created out of good intension for the promotion and education of technology
- * User should take their own caution and risk when using this library
- * The creator(s) of this library do not provide any garantee and waranty to use of this library and digital tool derives from this library
-  
-
+ * This library and Grasshopper plugin was created out of the good intension of education and promotion of technology.  
+ * User should take their own caution and risk when using this library.  
+ * The creator(s) and contributors of this library do not provide any garantee or waranty to the use of this library and/or 
+ * digital tool derives from this library.  
+ * 
  * --------------------CAUTION---------------------------
- * Working with electronic devices could be dangerous 
- * Always take precaution when working on electronic devices
- * Make sure you are well trained and informed to work on the specific system
- * Failure to appropriately operate your machine could lead to hardware damage and/or serious injuries
+ * Working with electronic devices could be dangerous.  
+ * Always take precaution accordingly and make sure you are well trained and informed to work on the specific system.  
+ * Failure to operate your machine correctly could result in hardware damage and/or serious injuries.  
  * 
 */
 
-namespace Beaver
+namespace Seastar
 {
     //public class Empty : GH_Component
     //{
     //    public Empty()
     //      : base("Insert Paths", "PathInsert",
     //          "Insert Path and command at specific index",
-    //          "Beaver", "Path")
+    //          "Seastar", "Path")
     //    {
     //    }
 
@@ -87,6 +86,9 @@ namespace Beaver
         custom
     }
 
+    /// <summary>
+    /// Tools contains properties for milling and extruder, such as offset.
+    /// </summary>
     public class Tool
     {
         public static List<string> ShapeList()
@@ -214,7 +216,7 @@ namespace Beaver
 
         //public override string ToString()
         //{
-        //    return "Beaver Machine";
+        //    return "Seastar Machine";
         //}
 
         public bool IsMill
@@ -227,6 +229,9 @@ namespace Beaver
         }
     }
 
+    /// <summary>
+    /// SPM axes to be added to RotationalAxes Class
+    /// </summary>
     public class SPM
     {
         //SPM config, assume η is equally divided
@@ -736,7 +741,9 @@ namespace Beaver
             return validPts;
         }
     }
-
+    /// <summary>
+    /// Spherical axes to be added to RotationalAxes Class
+    /// </summary>
     public class SphericalAxes
     {
         //public readonly double radius;
@@ -914,6 +921,10 @@ namespace Beaver
         SPM,
         SphericalAxes
     }
+
+    /// <summary>
+    /// RotationalAxes contains classes like SPM, Spherical class, etc. 
+    /// </summary>
     public class RotationAxes
     {
         public SPM spm;
@@ -1076,6 +1087,10 @@ namespace Beaver
         dFeedrate = 40
         
     }
+
+    /// <summary>
+    /// Machine class contains machine/printer info, including axes class, tool class, dimension, etc
+    /// </summary>
     public class Machine //set printer info........................................................
     {
         public Brep Volume;
@@ -1134,7 +1149,7 @@ namespace Beaver
         //    SizeZ = new Interval(0, _z);
 
         //    Volume = new Box(Plane.WorldXY, SizeX, SizeY, SizeZ).ToBrep();
-        //    Shape = Beaver.BedShape.rectangular;
+        //    Shape = Seastar.BedShape.rectangular;
         //    BedShape = new Rectangle3d(Plane.WorldXY, SizeX, SizeY).ToNurbsCurve();
         //    Tools = _tools;
         //}
@@ -1153,10 +1168,11 @@ namespace Beaver
             SizeZ = _z;
 
             Volume = new Box(Plane.WorldXY, SizeX, SizeY, SizeZ).ToBrep();
-            Shape = Beaver.BedShape.rectangular;
+            Shape = Seastar.BedShape.rectangular;
             BedShape = new Rectangle3d(Plane.WorldXY, SizeX, SizeY).ToNurbsCurve();
             Tools = _tools;
             system = DriveSystem.cartesian;
+            IsDelta = false;
         }
 
         /// <summary>
@@ -1181,7 +1197,7 @@ namespace Beaver
 
 
             IsDelta = true;
-            Shape = Beaver.BedShape.circular;
+            Shape = Seastar.BedShape.circular;
             Tools = _tools;
         }
 
@@ -1217,7 +1233,7 @@ namespace Beaver
             IsDelta = true;
             system = DriveSystem.delta;
 
-            Shape = Beaver.BedShape.circular;
+            Shape = Seastar.BedShape.circular;
             Tools = _tools;
 
             Ae = _Ae;
@@ -1272,11 +1288,11 @@ namespace Beaver
 
         public bool IsCircular
         {
-            get { return Shape == Beaver.BedShape.circular; }
+            get { return Shape == Seastar.BedShape.circular; }
         }
         public bool IsRectangular
         {
-            get { return Shape == Beaver.BedShape.rectangular; }
+            get { return Shape == Seastar.BedShape.rectangular; }
         }
 
         //using formular in  en.wikipedia.org/wiki/True_range_multilateration
@@ -3842,7 +3858,7 @@ namespace Beaver
             {
                 if (resourceMan == null)
                 {
-                    ResourceManager resourceManager = resourceMan = new ResourceManager("Beaver.Properties.Resources", typeof(Resources).Assembly);
+                    ResourceManager resourceManager = resourceMan = new ResourceManager("Seastar.Properties.Resources", typeof(Resources).Assembly);
                 }
                 return resourceMan;
             }

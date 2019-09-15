@@ -37,7 +37,7 @@
 //        public Component_Control()
 //          : base("Machine Control", "05 | Connect",
 //              "Send command to the machine??",
-//              "Beaver", "05 | Connect")
+//              "Seastar", "05 | Connect")
 //        {
 //        }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using System.Resources;
-using Beaver;
+using Seastar;
 using System.IO;
 
 namespace BeaverGrasshopper
@@ -52,7 +52,7 @@ namespace BeaverGrasshopper
             DA.SetData(0, msg);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.fileSave;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.fileSave;
 
         public override Guid ComponentGuid
         {
@@ -111,7 +111,7 @@ namespace BeaverGrasshopper
             DA.SetData(3, yy + mm + dd);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.fileDate;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.fileDate;
 
         public override Guid ComponentGuid
         {
@@ -124,7 +124,7 @@ namespace BeaverGrasshopper
         public FileSaver()
           : base("File Saver", "FileSave",
               "Save text file to a location and extension",
-              "Beaver", "04 | File")
+              "Seastar", "04 | File")
         {
         }
 

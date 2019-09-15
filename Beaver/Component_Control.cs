@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Windows.Forms;
-using Beaver;
+using Seastar;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
@@ -157,7 +157,7 @@ namespace SerialComponentLibrary
                 busy = false;
                 printerReady = false;
                 lastLine = "";
-                Beaver.Extension.expireOthers("WriteQueue", this);
+                Seastar.Extension.expireOthers("WriteQueue", this);
             }
 
 
@@ -217,7 +217,7 @@ namespace SerialComponentLibrary
             DA.SetDataList(1, log);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cntConnect;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cntConnect;
 
         public override Guid ComponentGuid
         {
@@ -449,7 +449,7 @@ namespace SerialComponentLibrary
             this.ExpireSolution(true);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cntLog;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cntLog;
         public override Guid ComponentGuid
         {
             get { return new Guid("52D22D10-A34C-4865-A9D4-EDF86EACA8DA"); }
@@ -519,7 +519,7 @@ namespace SerialComponentLibrary
         }
 
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cntQueue;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cntQueue;
         public override Guid ComponentGuid
         {
             get { return new Guid("87AC7B84-3103-44fb-91CA-488C5447DD0E"); }

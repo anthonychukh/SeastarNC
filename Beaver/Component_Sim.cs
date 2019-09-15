@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Beaver;
+using Seastar;
 using Grasshopper;
 using Grasshopper.GUI;
 using Grasshopper.Kernel;
@@ -197,7 +197,7 @@ namespace SeastarGrasshopper
             }
 
         }
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.simPreview;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.simPreview;
 
         public override Guid ComponentGuid
         {
@@ -379,7 +379,7 @@ namespace SeastarGrasshopper
             int textSize = 20;
             int lnThick = 3;
         }
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.simSim;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.simSim;
 
         public override Guid ComponentGuid
         {

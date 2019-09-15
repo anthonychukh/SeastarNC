@@ -14,14 +14,9 @@ C:\Users\antho\source\repos\BeaverNC\Beaver\obj\Debug\Beaver.csproj.GenerateReso
 C:\Users\antho\source\repos\BeaverNC\Beaver\obj\Debug\Beaver.csproj.CoreCompileInputs.cache
 C:\Users\antho\source\repos\BeaverNC\Beaver\obj\Debug\Beaver.dll
 C:\Users\antho\source\repos\BeaverNC\Beaver\obj\Debug\Beaver.pdb
-C:\Users\antho\GitHub\BeaverNC\Beaver\bin\Beaver.dll
-C:\Users\antho\GitHub\BeaverNC\Beaver\bin\Beaver.pdb
 C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Beaver.csprojAssemblyReference.cache
-C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Beaver.Properties.Resources.resources
 C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Beaver.csproj.GenerateResource.cache
 C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Beaver.csproj.CoreCompileInputs.cache
-C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Beaver.dll
-C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Beaver.pdb
 C:\Users\antho\GitHub\BeaverNC\Beaver\bin\dll\x86\OpenCvSharpExtern.dll
 C:\Users\antho\GitHub\BeaverNC\Beaver\bin\dll\x86\opencv_ffmpeg400.dll
 C:\Users\antho\GitHub\BeaverNC\Beaver\bin\dll\x64\OpenCvSharpExtern.dll
@@ -42,3 +37,8 @@ C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Beaver.csproj.CopyComplete
 C:\Users\antho\GitHub\BeaverNC\Beaver\bin\Firefly.Bridge.dll
 C:\Users\antho\GitHub\BeaverNC\Beaver\bin\Melanchall.DryWetMidi.dll
 C:\Users\antho\GitHub\BeaverNC\Beaver\bin\Melanchall.DryWetMidi.xml
+C:\Users\antho\GitHub\BeaverNC\Beaver\bin\Seastar.dll
+C:\Users\antho\GitHub\BeaverNC\Beaver\bin\Seastar.pdb
+C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Seastar.Properties.Resources.resources
+C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Seastar.dll
+C:\Users\antho\GitHub\BeaverNC\Beaver\obj\Debug\Seastar.pdb

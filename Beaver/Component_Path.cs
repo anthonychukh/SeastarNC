@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Beaver;
+using Seastar;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
@@ -278,7 +278,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.pathTranslte;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathTranslte;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -517,7 +517,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.pathPinIO;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathPinIO;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -688,7 +688,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.pathM;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathM;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -772,7 +772,7 @@ namespace SeastarGrasshopper
             DA.SetDataList(0, pathOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.pathJoin;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathJoin;
 
         public override Guid ComponentGuid
         {
@@ -830,7 +830,7 @@ namespace SeastarGrasshopper
             DA.SetData(0, pth);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.pathInsert;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathInsert;
 
         public override Guid ComponentGuid
         {
@@ -1003,7 +1003,7 @@ namespace SeastarGrasshopper
             DA.SetData(1, msg);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.pathGcode;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathGcode;
 
         public override Guid ComponentGuid
         {
@@ -1022,7 +1022,7 @@ namespace SeastarGrasshopper
         public PathPolyline()
           : base("Polyline Path", "PathPolyline",
               "Create tool path from polyline??",
-              "Beaver", "Path")
+              "Seastar", "Path")
         {
         }
 
@@ -1088,7 +1088,7 @@ namespace SeastarGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Beaver Path", "bp", "Beaver Path object", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Path object", GH_ParamAccess.item);
             pManager.AddIntervalParameter("Feed Range", "f", "Range of feed rate", GH_ParamAccess.item);
             pManager.AddIntervalParameter("Extrusion Rate Range", "er", "Range of extrusion rate", GH_ParamAccess.item);
             pManager.AddIntegerParameter("test", "test", "test", GH_ParamAccess.item);
@@ -1462,7 +1462,7 @@ namespace SeastarGrasshopper
         public PathPolylinePrint()
           : base("Polyline Print Path", "PathPolylinePrint",
               "Create printing tool path from polyline",
-              "Beaver", "Path")
+              "Seastar", "Path")
         {
         }
 
@@ -1529,7 +1529,7 @@ namespace SeastarGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Beaver Path", "bp", "Beaver Path object", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Path object", GH_ParamAccess.item);
             pManager.AddIntervalParameter("Feed Range", "f", "Range of feed rate", GH_ParamAccess.item);
             pManager.AddIntervalParameter("Extrusion Rate Range", "er", "Range of extrusion rate", GH_ParamAccess.item);
             pManager.AddIntegerParameter("test", "test", "test", GH_ParamAccess.item);
@@ -1642,7 +1642,7 @@ namespace SeastarGrasshopper
                             }
                             if (flatXY && Math.Abs(pl[i].Z - FLH % LH) > DocumentTolerance()) //not lies on exact layer height
                             {
-                                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Path does not lies on layer height as described on configuration. Slice layers with Beaver Slicing Plane component");
+                                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Path does not lies on layer height as described on configuration. Slice layers with Seastar Slicing Plane component");
                             }
                         }
                         else  //is first layer
@@ -1787,19 +1787,19 @@ namespace SeastarGrasshopper
         public InsetAction()
           : base("Insert Action", "InsertAction",
               "Insert non-move command into Path",
-              "Beaver", "Path")
+              "Seastar", "Path")
         {
         }
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("Beaver Path", "bp", "Beaver Paths to join", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Paths to join", GH_ParamAccess.list);
             pManager.AddIntegerParameter("Action", "a", "Action to insert", GH_ParamAccess.list);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Beaver Path", "bp", "Joined Beaver Paths", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Seastar Path", "bp", "Joined Seastar Paths", GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)

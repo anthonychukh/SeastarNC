@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Grasshopper.Kernel;
 using Rhino.Geometry;
-using Beaver;
+using Seastar;
 using Grasshopper.Kernel.Data;
 using Grasshopper;
 using System.Linq;
@@ -192,7 +192,7 @@ namespace SeastarGrasshopper
             }
         }*/
 
-        protected override Bitmap Icon => Beaver.Properties.Resources.cfgOpen;
+        protected override Bitmap Icon => Seastar.Properties.Resources.cfgOpen;
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
@@ -282,7 +282,7 @@ namespace SeastarGrasshopper
         /// Provides an Icon for every component that will be visible in the User Interface.
         /// Icons need to be 24x24 pixels.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.configExtruder;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.configExtruder;
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
@@ -341,7 +341,7 @@ namespace SeastarGrasshopper
             DA.SetDataList("Configuration", cfgOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgFila;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cfgFila;
 
         public override Guid ComponentGuid
         {
@@ -394,7 +394,7 @@ namespace SeastarGrasshopper
             DA.SetDataList("Configuration", cfgOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgMac;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cfgMac;
 
         public override Guid ComponentGuid
         {
@@ -447,7 +447,7 @@ namespace SeastarGrasshopper
             DA.SetDataList("Configuration", cfgOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgMill;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cfgMill;
 
         public override Guid ComponentGuid
         {
@@ -558,7 +558,7 @@ namespace SeastarGrasshopper
             DA.SetData(0, msg);
         }
 
-        protected override System.Drawing.Bitmap Icon => Beaver.Properties.Resources.cfgSave;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cfgSave;
 
         public override Guid ComponentGuid
         {

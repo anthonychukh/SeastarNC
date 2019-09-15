@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Beaver;
+using Seastar;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
@@ -24,7 +24,7 @@ namespace SeastarGrasshopper
         public Camera()
           : base("Camera", "Camera",
               "Define Camera to use",
-              "Beaver", "CV")
+              "Seastar", "CV")
         {
         }
 

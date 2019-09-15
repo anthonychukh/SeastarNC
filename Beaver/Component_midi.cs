@@ -8,14 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Beaver
+namespace Seastar
 {
     public class ReadMIDI : GH_Component
     {
         public ReadMIDI()
           : base("Read Midi", "Midi",
               "Convert midi file to text",
-              "Beaver", "Midi")
+              "Seastar", "Midi")
         {
         }
 
@@ -101,7 +101,7 @@ namespace Beaver
         public DeltaJogCarriage()
           : base("Delta Jog Carriage", "JogCarriage",
               "Approximate joint jogging in delta",
-              "Beaver", "Midi")
+              "Seastar", "Midi")
         {
         }
 
