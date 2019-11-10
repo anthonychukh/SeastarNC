@@ -13,6 +13,9 @@ using Grasshopper.Kernel.Types;
 using Rhino;
 using Rhino.Display;
 using Rhino.Geometry;
+using Grasshopper.Kernel.Attributes;
+using Grasshopper.GUI.Canvas;
+using System.Threading;
 
 namespace SeastarGrasshopper
 {
@@ -42,7 +45,7 @@ namespace SeastarGrasshopper
         protected override void AppendAdditionalComponentMenuItems(ToolStripDropDown menu)
         {
             base.AppendAdditionalComponentMenuItems(menu);
-            Menu_AppendItem(menu, "Auto Extrusion Rate", Menu_AutoER, true, autoER);
+            
             Menu_AppendItem(menu, "Display Path", Menu_displayPath, true, displayPath);
             Menu_AppendItem(menu, "Display Feed Rate", Menu_displayFeed, true, displayFeed);
             Menu_AppendItem(menu, "Display Print Width", Menu_displayWidth, true, displayWidth);
@@ -50,16 +53,13 @@ namespace SeastarGrasshopper
             Menu_AppendItem(menu, "Display text/numbers", Menu_displayText, true, displayText);
         }
 
-        public bool autoER = false;
+        
         public bool displayPath = true;
         public bool displayFeed = false;
         public bool displayWidth = false;
         public bool displayText = true;
 
-        private void Menu_AutoER(object Sender, EventArgs e)
-        {
-            autoER = !autoER;
-        }
+        
         private void Menu_displayText(object Sender, EventArgs e)
         {
             displayText = !displayText;
@@ -94,6 +94,7 @@ namespace SeastarGrasshopper
 
             Path pthJ = new Path(Path.Join(pp, 99999, false)[0]);
             Config cfg = pthJ.config;
+            parkPosition = cfg.Machine.parkPos;
             foreach(Block blk in pthJ.blocks)
             {
                 if (blk.coordinate.HasValue)
@@ -142,13 +143,36 @@ namespace SeastarGrasshopper
 
         {
             GH_Document document = this.OnPingDocument();
+            Color defSelectedCol = document.PreviewColourSelected;
             Color defCol =  document.PreviewColour;
             int textSize = 20;
             int lnThick = 3;
 
             if (displayPath)
             {
-                //args.Display.DrawCurve(pCrv, PathOut.DefaultColor);
+                Point3d lastPt = parkPosition;
+                foreach (Path path in paths)
+                {
+                    for (int i = 0; i < path.blocks.Count; i++)
+                    {
+                        if (path.blocks[i].coordinate.HasValue)
+                        {
+                            Point3d nowPt = new Point3d(path.blocks[i].coordinate.Value);
+                            double nowF = (double)path.blocks[i].F;
+                            args.Display.DrawLine(lastPt, path.blocks[i].coordinate.Value, defCol, lnThick);
+                            if (displayText)
+                            {
+                                args.Display.Draw2dText(nowF.ToString("F0"), defCol, (lastPt + nowPt) * 0.5, false, textSize);
+                            }
+                            lastPt = path.blocks[i].coordinate.Value;
+                        }
+                        else
+                        {
+                            string text = path.blocks[i].ToGCode(2);
+                            args.Display.DrawDot(lastPt, text, Color.Black, path.DefaultColor);
+                        }
+                    }
+                }
             }
             if (displayFeed)
             {
@@ -193,6 +217,10 @@ namespace SeastarGrasshopper
                         }
                     }
                 }
+
+            }
+            if (displayWidth)
+            {
 
             }
 
@@ -270,37 +298,36 @@ namespace SeastarGrasshopper
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             List<Path> paths = new List<Path>();
-            Path pathJ = new Path(Path.Join(paths, double.MaxValue, false)[0]);
             double t = 0;           //current time
             double pbSpeed = 1.0;   //playback speed
             bool start = false;     //start playing
-
             DA.GetDataList<Path>(0, paths);
             DA.GetData(1, ref t);
             DA.GetData(2, ref pbSpeed);
             DA.GetData(3, ref start);
 
-            Config cfg = paths[0].config;
-            if(this.Params.Input[4].SourceCount > 0)
-            {
-                DA.GetData(4, ref cfg);
-            }
+            Path pathJ = new Path(Path.Join(paths, double.MaxValue, false)[0]);
+
+            Config cfg = new Config();
+            if (this.Params.Input[4].SourceCount > 0) DA.GetData(4, ref cfg);
+            else cfg = paths[0].config;
+
+
             Point3d parkPos = cfg.Machine.parkPos;
-            
 
             //timer..................................................
             DateTime now = DateTime.Now;
-            _minute = now.Minute;
+            nowTime = now;
             //A = now.ToLongTimeString();
 
-            if (_timer == null)
-            {
-                // Set up timer to fire at dt interval.
-                _timer = new System.Timers.Timer(dt);
-                _timer.AutoReset = true;
-                _timer.Elapsed += TimerElapsed;
-                _timer.Enabled = true;
-            }
+            //if (_timer == null)
+            //{
+            //    // Set up timer to fire at dt interval.
+            //    _timer = new System.Timers.Timer(dt);
+            //    _timer.AutoReset = true;
+            //    _timer.Elapsed += TimerElapsed;
+            //    _timer.Enabled = true;
+            //}
 
             for (int i = 0; i < pathJ.blocks.Count; i++)
             {
@@ -332,13 +359,13 @@ namespace SeastarGrasshopper
                         break;
                 }
 
-                if(blkDisplay.Count > trailCount)
-                {
-                    do
-                    {
-                        blkDisplay.Dequeue();
-                    } while (blkDisplay.Count >= trailCount);
-                }
+                //if(blkDisplay.Count > trailCount)
+                //{
+                //    do
+                //    {
+                //        blkDisplay.Dequeue();
+                //    } while (blkDisplay.Count >= trailCount);
+                //}
             }
 
             foreach(Path pth in paths)
@@ -346,31 +373,75 @@ namespace SeastarGrasshopper
                 pth.ToPolyline();
             }
 
+            if (start)
+            {
+                Form e = new Seastar.SimForm();
+#if DEBUG
+                this.AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "form opening");
+#endif
+            }
 
             DA.SetData(0, trailCount);
         }
 
         public Queue<Block> blkDisplay = new Queue<Block>();
         private System.Timers.Timer _timer;
-        private int _minute;
+        DateTime nowTime;
         public Point3d lastPos;
         public Point3d lastCoor;
         public Point3d nextCoor;
+        Seastar.SimForm frm;
+        public static Thread thr;
+        public static bool run = true;
+
+
+        //double click to open form start...................................................................................
+        private void UpdateSetData(GH_Document gh)
+        {
+            ExpireSolution(false);
+        }
+        public void DisplayForm()
+        {
+            frm = new Seastar.SimForm();
+            Grasshopper.GUI.GH_WindowsFormUtil.CenterFormOnCursor(frm, true);
+            frm.Show(Grasshopper.Instances.DocumentEditor);
+        }
+
+        public override void CreateAttributes()
+        {
+            m_attributes = new ControlAttributes(this);
+        }
+        public class ControlAttributes : GH_ComponentAttributes
+        {
+            public ControlAttributes(IGH_Component PathSim) : base(PathSim) { }
+
+            public override GH_ObjectResponse RespondToMouseDoubleClick(GH_Canvas sender, GH_CanvasMouseEvent e)
+            {
+                (Owner as PathSim)?.DisplayForm();
+                return GH_ObjectResponse.Handled;
+            }
+        }
+        //double click to open form end...................................................................................
+
 
         private void TimerElapsed(object sender, EventArgs e)
         {
             // First check to see if the current minute is the same as the previous minute.
-            DateTime now = DateTime.Now;
-            if (_minute == now.Minute) return;
+            //DateTime now = DateTime.Now;
+            //if (nowTime == now) return;
 
             // If not, invoke the ExpireSolution method on the UI thread.
             // To do so, we must get access to a UI control. On Rhino6 you can use Rhino.RhinoApp.InvokeOnUiThread().
-            System.Windows.Forms.Control control = Grasshopper.Instances.ActiveCanvas;
-            if (control == null)
-                return;
+            //System.Windows.Forms.Control control = Grasshopper.Instances.ActiveCanvas;
+            //if (control == null)
+            //    return;
 
-            Action<bool> action = new Action<bool>(this.ExpireSolution);
-            control.Invoke(action, true);
+            //control code here
+
+            //
+
+            //Action<bool> action = new Action<bool>(this.ExpireSolution);
+            //control.Invoke(action, true);
         }
         public override void DrawViewportWires(IGH_PreviewArgs args)
         {
@@ -386,4 +457,6 @@ namespace SeastarGrasshopper
             get { return new Guid("d21573ef-bcf9-4ef8-ab3a-0be75ae37ae7"); }
         }
     }
+
+    
 }

@@ -23,7 +23,8 @@ namespace SeastarGrasshopper
         /// </summary>
         public PathTranslate()
           : base("Translation Path", "PathTranslate",
-              "Create a translation/movement path",
+              "Create a translation/movement path\n" +
+                "Primary component to create any movement",
               "Seastar", "03 | Path")
         {
         }
@@ -300,14 +301,15 @@ namespace SeastarGrasshopper
               "Seastar", "03 | Path")
         {
         }
-        public override GH_Exposure Exposure => GH_Exposure.primary;
+        public override GH_Exposure Exposure => GH_Exposure.secondary;
 
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddNumberParameter("Extrusion Rate", "ER", "Extrusion rate as cross sectional area of extrusion in mm^2", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Extrusion Rate", "ER", "Extrusion rate as cross sectional area of extrusion in mm^2\n" +
+                "Use PathER component to calculate this value", GH_ParamAccess.list);
             pManager[0].Optional = true;
             pManager.AddIntegerParameter("Spindle Speed", "S", "Spindle Speed in RPM", GH_ParamAccess.list);
             pManager[1].Optional = true;
@@ -323,7 +325,8 @@ namespace SeastarGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Action block", "A", "Seastar action block", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Action block", "A", "Seastar action block\n" +
+                "Connect to PathTranslate component", GH_ParamAccess.list);
             pManager.AddTextParameter("Message", "msg", "Message", GH_ParamAccess.item);
         }
 
@@ -406,7 +409,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override Bitmap Icon => Resources.joker;
+        protected override Bitmap Icon => Seastar.Properties.Resources.pathAction;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -428,14 +431,14 @@ namespace SeastarGrasshopper
               "Seastar", "03 | Path")
         {
         }
-        public override GH_Exposure Exposure => GH_Exposure.primary;
+        public override GH_Exposure Exposure => GH_Exposure.secondary;
 
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddIntegerParameter("Pin Number", "P", "List of pin number", GH_ParamAccess.list);
+            pManager.AddIntegerParameter("Pin number", "P", "List of pin number", GH_ParamAccess.list);
             pManager.AddIntegerParameter("PWM state", "pwm", "PWM states of each pin.\nRanges from 0(low) to 255(high).", GH_ParamAccess.tree);
         }
 
@@ -445,7 +448,8 @@ namespace SeastarGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Action block", "A", "Seastar action block", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Action block", "A", "Seastar action block\n" +
+                "Connect to PathTranslate component", GH_ParamAccess.list);
             pManager.AddTextParameter("Message", "msg", "Message", GH_ParamAccess.list);
             pManager.AddIntegerParameter("test", "test", "test", GH_ParamAccess.item);
         }
@@ -517,7 +521,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathPinIO;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathPinIO2;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -528,6 +532,75 @@ namespace SeastarGrasshopper
         }
 
         
+    }
+
+    public class PathServo : GH_Component
+    {
+        public PathServo()
+          : base("Servo Position", "PathServo",
+              "Update servo position",
+              "Seastar", "03 | Path")
+        {
+        }
+        public override GH_Exposure Exposure => GH_Exposure.secondary;
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.AddIntegerParameter("Servo index", "i", "Servo index", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Servo position", "p", "Servo position to set\n" +
+                "This value should be between 500 to 2500", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Normalise position", "n", "Normalise value of servo position\n" +
+                "If true, input position value from 0-1\n" +
+                "If false, input position valie from 500-2500", GH_ParamAccess.item, false);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.AddGenericParameter("Action block", "A", "Seastar action block\n" +
+                "Connect to PathTranslate component", GH_ParamAccess.item);
+            pManager.AddTextParameter("Message", "msg", "Message", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+            string msg = "";
+            int i = 0;
+            double s = 0;
+            bool nor = false;
+            Interval range = new Interval(500, 2500);
+            DA.GetData("Servo index", ref i);
+            DA.GetData("Servo position", ref s);
+            DA.GetData("Normalise position", ref nor);
+
+            if (nor)
+            {
+                if(s < 0 || s > 1)
+                {
+                    msg += "Servo position value invalid. Please input value between 0 to 1";
+                    this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, msg);
+                    return;
+                }
+                s = s * (range.Max - range.Min) + range.Min;
+            }
+            if(s<range.Min || s > range.Max)
+            {
+                msg += "Servo position value invalid. Please input value between 500 to 2500";
+                this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, msg);
+                return;
+            }
+
+            Block mc = new Block(280, i, Convert.ToInt32(s));
+
+            DA.SetData(0, mc);
+            DA.SetData(1, msg);
+        }
+
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathServo;
+
+        public override Guid ComponentGuid
+        {
+            get { return new Guid("c097a2d1-6712-4995-a3f6-03f30108cb66"); }
+        }
     }
 
     public class MCommand : GH_Component //create for both printing and milling
@@ -541,7 +614,7 @@ namespace SeastarGrasshopper
               "Seastar", "03 | Path")
         {
         }
-        public override GH_Exposure Exposure => GH_Exposure.primary;
+        public override GH_Exposure Exposure => GH_Exposure.secondary;
 
         /// <summary>
         /// Registers all the input parameters for this component.
@@ -563,7 +636,8 @@ namespace SeastarGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Action block", "A", "Seastar action block", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Action block", "A", "Seastar action block\n" +
+                "Connect to PathTranslate component", GH_ParamAccess.list);
             pManager.AddTextParameter("Message", "msg", "Message", GH_ParamAccess.item);
             pManager.AddIntegerParameter("test", "test", "test", GH_ParamAccess.item);
         }
@@ -708,7 +782,7 @@ namespace SeastarGrasshopper
               "Seastar", "03 | Path")
         {
         }
-        public override GH_Exposure Exposure => GH_Exposure.primary;
+        public override GH_Exposure Exposure => GH_Exposure.secondary;
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddNumberParameter("Extrusion Width", "EW", "Extrusion Width", GH_ParamAccess.item);
@@ -717,7 +791,8 @@ namespace SeastarGrasshopper
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddNumberParameter("Extrusion Rate", "ER", "Extrusion Rate in mm/min", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Extrusion Rate", "ER", "Extrusion Rate in mm/min\n" +
+                "Connect to PathAction component", GH_ParamAccess.item);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
@@ -730,7 +805,7 @@ namespace SeastarGrasshopper
             DA.SetData(0, EW * LH);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathExtru;
 
         public override Guid ComponentGuid
         {
@@ -747,7 +822,7 @@ namespace SeastarGrasshopper
               "Seastar", "03 | Path")
         {
         }
-        public override GH_Exposure Exposure => GH_Exposure.secondary;
+        public override GH_Exposure Exposure => GH_Exposure.tertiary;
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Paths to join", GH_ParamAccess.list);
@@ -772,7 +847,7 @@ namespace SeastarGrasshopper
             DA.SetDataList(0, pathOut);
         }
 
-        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathJoin;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathJoin2;
 
         public override Guid ComponentGuid
         {
@@ -789,7 +864,7 @@ namespace SeastarGrasshopper
               "Seastar", "03 | Path")
         {
         }
-        public override GH_Exposure Exposure => GH_Exposure.secondary;
+        public override GH_Exposure Exposure => GH_Exposure.tertiary;
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
@@ -915,15 +990,13 @@ namespace SeastarGrasshopper
             DA.SetData("Ending Coordinate", p.endCoori);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.pathDecompose;
 
         public override Guid ComponentGuid
         {
             get { return new Guid("5c6df3b1-da4b-4b49-8ad5-fa7b1ba0ef1e"); }
         }
     }
-
-
 
 
     public class PathGcode : GH_Component

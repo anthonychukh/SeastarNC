@@ -20,7 +20,16 @@ namespace BeaverGrasshopper
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddTextParameter("File Path", "path", "File path to save to", GH_ParamAccess.item, @"C:\Users\antho\Google Drive (anthony@space10.io)\Kai-Hong Anthony Chu\Seastar\testGcode");
+            string path = "";
+            try
+            {
+                path = this.OnPingDocument().FilePath;
+            }
+            catch
+            {
+                path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            }
+            pManager.AddTextParameter("File Path", "path", "File path to save to", GH_ParamAccess.item, path);
             pManager.AddTextParameter("File Name", "name", "File name", GH_ParamAccess.item, "test");
             pManager.AddTextParameter("File Extension", "ext", "File extension", GH_ParamAccess.item, ".gcode");
             pManager.AddTextParameter("Lines of text", "lines", "Lines of text to write", GH_ParamAccess.list);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,7 @@ using Grasshopper.Kernel.Types;
 using Melanchall.DryWetMidi.Smf.Interaction;
 using Rhino.Geometry;
 using static System.Math;
+
 
 /*
  * READ ME
@@ -70,8 +72,8 @@ namespace Seastar
     //        get { return new Guid("b51535a9-ef20-4670-9e98-22b7c8d9daaf"); }
     //    }
     //}
-    
-    
+
+
 
     public enum ToolType
     {
@@ -1105,7 +1107,7 @@ namespace Seastar
         public string name = "";
         public bool hasCoolant;
         public Point3d parkPos = new Point3d(0, 0, 0);
-        public RotationAxes rAxes;
+        public RotationAxes rAxes = new RotationAxes();
 
         public bool IsDelta = false;
         readonly public Point3d[] dCol = new Point3d[3]; //contain 3 array of x,y,z of col position. ie 3 points. only represent kinematics
@@ -2033,6 +2035,7 @@ namespace Seastar
         public int? endCoori;
         public Color DefaultColor = Color.Red;
         public Config config = new Config();
+        public List<int> Servo = new List<int>();
 
         public Path(Block _block)
         {
@@ -2710,6 +2713,7 @@ namespace Seastar
         public bool absPos = true;
         public bool absE = true;
         public string msg = "";
+        
 
         public Gcode(List<string> _line)
         {
@@ -3421,6 +3425,7 @@ namespace Seastar
     }
 
 
+
     public class Connect
     {
 
@@ -3434,6 +3439,7 @@ namespace Seastar
         time,
         duration
     }
+
     public class MidiExtension
     {
         /// <summary>

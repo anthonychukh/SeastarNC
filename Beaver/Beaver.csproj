@@ -56,6 +56,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Device" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -88,6 +89,16 @@
     <Compile Include="Component_Path.cs" />
     <Compile Include="Component_Control2.cs" />
     <Compile Include="Component_Machine.cs" />
+    <Compile Include="DropShadow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RoundedRectangle.cs" />
+    <Compile Include="SimForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SimForm.Designer.cs">
+      <DependentUpon>SimForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -96,9 +107,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="SimForm.resx">
+      <DependentUpon>SimForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -121,7 +136,6 @@
     <None Include="Resources\pathJoin.png" />
     <None Include="Resources\pathInsert.png" />
     <None Include="Resources\pathGcode.png" />
-    <None Include="Resources\pathExtru.png" />
     <None Include="Resources\fileSave.png" />
     <None Include="Resources\fileOpen.png" />
     <None Include="Resources\fileDate.png" />
@@ -151,6 +165,83 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Seastar_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pathAction.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pathDecompose.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pathJoin2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pathExtru.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\planeZXZ.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cfgGet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pathPinIO2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pathServo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\planeZXZ2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\createSPM2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\planeLocal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvEdge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvMSER.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvCamera.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvBlur.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="WIA">
+      <Guid>{94A0E92D-43C0-494E-AC29-FD45948A5221}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvToFire.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvFace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvMorph.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvColSpace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvColTrans.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cvDeCam.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\button%402x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

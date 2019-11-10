@@ -196,7 +196,7 @@ namespace SerialComponentLibrary
                             "M155 S1 ; auto send temp\n" +
                             "G28;Home\n";
 
-                        SerialComponentLibrary.Write2Queue.AddToQueue(initCodee, ref msgs);
+                        SerialComponentLibrary.Add2Queue.AddToQueue(initCodee, ref msgs);
                         Debug.WriteLine("Connect::Printer connected & initialised");
                         Connect.printerReady = true;
                     }
@@ -286,6 +286,8 @@ namespace SerialComponentLibrary
                         //break;
                     }
                 }
+
+                
             }
         }
 
@@ -331,9 +333,9 @@ namespace SerialComponentLibrary
 
     public class ReadWrite : GH_Component
     {
-        public ReadWrite() : base("ReadWrite", "RW", "Manage all data send between Grasshopper and printer\n" +
+        public ReadWrite() : base("ReadWrite", "RW", "Manage data flow between Grasshopper and printer\n" +
             "Reads printer log and sends command from queue to printer\n" +
-            "Update and loop auotmatically", "Seastar", "05 | Connect")
+            "This component update and loop auotmatically", "Seastar", "05 | Connect")
         {
         }
 
@@ -348,11 +350,12 @@ namespace SerialComponentLibrary
             pManager.AddTextParameter("Queue", "Q", "Queue of commands waiting to be sent\n" +
                 "Command can only be sent when the printer is ready to receive it\n" +
                 "If queue get too long, reduce subdivision or increase interval between commands", GH_ParamAccess.list);
+            pManager.AddTextParameter("Message", "msg", "Message", GH_ParamAccess.item);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-
+            string msg = "";
             int queueSize = 3;
             List<string> logtemp = new List<string>();
             //Resend..............................................................
@@ -445,8 +448,12 @@ namespace SerialComponentLibrary
             {
                 DA.SetData(0, "No printer connected");
             }
-
             this.ExpireSolution(true);
+        }
+
+        private void UpdateSetData(GH_Document gh)
+        {
+            ExpireSolution(false);
         }
 
         protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cntLog;
@@ -460,11 +467,11 @@ namespace SerialComponentLibrary
 
     
 
-    public class Write2Queue : GH_Component
+    public class Add2Queue : GH_Component
     {
         //SerialComponentLibrary.SerialTest01 thisPort = new SerialComponentLibrary.SerialTest01();
 
-        public Write2Queue()
+        public Add2Queue()
             : base("WriteToQueue", "WQ", "This compoent ONLY write command to queue\n" +
                   "Use ReadWrite component to actually send command to printer", "Seastar", "05 | Connect")
         {

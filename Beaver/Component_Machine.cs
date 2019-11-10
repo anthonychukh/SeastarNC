@@ -525,7 +525,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.createSPM;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.createSPM2;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -652,7 +652,7 @@ namespace SeastarGrasshopper
             args.Display.DrawPoint(s1.homePlane.Origin, defCol);
             args.Display.DrawPoint(s1.mountPlane.Origin, defCol);
         }
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.createSPM;
 
         public override Guid ComponentGuid
         {
@@ -735,15 +735,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon
-        {
-            get
-            {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-                return null;
-            }
-        }
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.planeZXZ2;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
@@ -829,15 +821,7 @@ namespace SeastarGrasshopper
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon
-        {
-            get
-            {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-                return null;
-            }
-        }
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.planeLocal;
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.

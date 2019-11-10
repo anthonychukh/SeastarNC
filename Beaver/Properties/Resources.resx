@@ -202,4 +202,67 @@
   <data name="Seastar_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Seastar_24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="cfgGet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cfgGet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="createSPM2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\createSPM2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvCamera" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvCamera.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvEdge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvEdge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvMSER" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvMSER.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathAction" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathAction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathDecompose" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathDecompose.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathJoin2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathJoin2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathPinIO2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathPinIO2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="pathServo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pathServo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="planeLocal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\planeLocal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="planeZXZ" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\planeZXZ.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="planeZXZ2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\planeZXZ2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvBlur" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvBlur.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvFace" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvFace.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvToFire" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvToFire.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvColSpace" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvColSpace.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvColTrans" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvColTrans.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvDeCam" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvDeCam.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cvMorph" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cvMorph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="button_2x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\button@2x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

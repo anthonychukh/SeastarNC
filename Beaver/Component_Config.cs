@@ -508,7 +508,7 @@ namespace SeastarGrasshopper
             DA.SetData(1, configVal[k]);
         }
 
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
+        protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cfgGet;
 
         public override Guid ComponentGuid
         {
