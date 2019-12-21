@@ -11,10 +11,12 @@ A protoype was created by modifying an Anycubic Linear Plus Delta printer with a
 <img src = "Beaver/Resources/photo/AT0A3840.jpg" height = 800>
   
 **Installation:**  
- * Go to SeastarNC/Beaver/bin and download Beaver.gha.  
+ * Download Seastar.gha and required .dll <a href="Beaver/bin/Seastar.rar" Download>here</a>.
  * Open Grasshopper and go to File/Special Folder/Library.
- * Place Beaver.gha into the Library folder.
-SeastarNC is still an WIP and will be releases on Food4Rhino. Stay tune!  
+ * Unzipped file and place the .gha and .dll into the Library folder.
+ * Make sure all files are unblocked(Left click -> properties -> Uncheck "block")  
+   
+SeastarNC is still an WIP and will be released on Food4Rhino soon. Stay tune!  
   
 **Features**  
  * enable the usage of 3D printers as robotic arm system.
