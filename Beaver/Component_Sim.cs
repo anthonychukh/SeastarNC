@@ -148,7 +148,7 @@ namespace SeastarGrasshopper
             int textSize = 20;
             int lnThick = 3;
 
-            if (displayPath)
+            if (displayPath && paths != null)
             {
                 Point3d lastPt = parkPosition;
                 foreach (Path path in paths)

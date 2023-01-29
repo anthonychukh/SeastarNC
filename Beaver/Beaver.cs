@@ -3028,7 +3028,7 @@ namespace Seastar
             Rhino.RhinoDoc doc = Rhino.RhinoDoc.ActiveDoc;
             Rhino.UnitSystem system = doc.ModelUnitSystem;
 
-
+            #region scale to match machine unit and rhino unit..........
             if (system.ToString() == "Meters")
             {
                 scale = 1000;
@@ -3054,34 +3054,27 @@ namespace Seastar
                 scale = 304.8;
                 _msg += "Rhino unit = Feet. All points scaled 304.8x\n";
             }
-
+            #endregion
 
 
             if (absPos)
-            {
                 lines.Add("G90 ; Use absolute position");
-            }
             else
-            {
                 lines.Add("G91 ; Use relative position");
-            }
+            
             if (absE)
-            {
                 lines.Add("M82 ; Use absolute E");
-            }
             else
-            {
                 lines.Add("M83 ; Use relative E");
-            }
+            
 
 
             for (int k = 0; k < paths.Count; k++) //for each path in gcode
             {
 
                 if(this.config.Machine.Volume == null)
-                {
                     msg += "No machine configuration detected";
-                }
+                
 
                 for (int j = 0; j < paths[k].blocks.Count; j++)
                 {
@@ -3348,16 +3341,18 @@ namespace Seastar
             return _line + "*" + cs.ToString();
         }
 
-        //public void AddCheckSum()
-        //{
-        //    int cs = 0;
-        //    for (int i = 0; i < _line.Length; i++)
-        //        cs ^= _line[i];
-        //    cs &= 0xff;
-
-        //    return _line + "*" + cs.ToString();
-        //}
-
+        /// <summary>
+        /// Add line number and check sum to each line of gcode string.
+        /// </summary>
+        /// <param name="_line">Single line of code.</param>
+        /// <param name="_lineNum">Line number. Updated per line written.</param>
+        /// <returns></returns>
+        public static string LineSyntax(string _line, ref int _lineNum)
+        {
+            string ln = $"N{_lineNum} {_line}";
+            _lineNum++;
+            return AddCheckSum(ln);
+        }
 
         public static string SaveFile(string loc, string name, string ext, List<string> lines, bool overwrite, bool write)
         {

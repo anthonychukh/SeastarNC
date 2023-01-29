@@ -13,9 +13,11 @@ namespace SerialComponentLibrary
     
     public class Connect : GH_Component
     {
-
+        #region control constant variables..............................................
+        /// <summary> The current active port seastar is using. </summary>
         public static readonly SerialPort thisPort = new SerialPort();
-        public static int N = 0; //this Line count. Add one after writing
+        /// <summary> The current line count. Add one after wrote to queue. </summary>
+        public static int N = 0; 
         public static int lastNsent = 0; //keep track of lastN sent, check with read ok
         public static string lastLine = "";
         public static int ok = 0; //last ok signal
@@ -36,9 +38,11 @@ namespace SerialComponentLibrary
             "M220 S100 ; speed factor override\n" +
             "M221 S100 ; extrude factor override\n" +
             "M111 S6 ; Debug level 6\n" +
-            "M155 S1 ; auto send temp\n";
+            "M155 S1 ; auto send temp\n" +
+            "G28;Home\n";
+        public static string firmwareInfo = "";
 
-
+        #endregion............................................................
 
         public Connect() : base("Connect to printer", "Connect", 
             "Connect to printer through Serial Port.", 
@@ -48,9 +52,8 @@ namespace SerialComponentLibrary
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            
             pManager.AddTextParameter("Port", "P", "Port Name", GH_ParamAccess.item, "COM6");
-            pManager.AddIntegerParameter("Baud", "B", "Baud Rate", GH_ParamAccess.item, 115200);
+            pManager.AddIntegerParameter("Baud", "B", "Baud Rate", GH_ParamAccess.item, 250000);
             pManager.AddBooleanParameter("Open", "O", "Open Port", GH_ParamAccess.item, false);
         }
 
@@ -64,7 +67,8 @@ namespace SerialComponentLibrary
         protected override void AppendAdditionalComponentMenuItems(ToolStripDropDown menu)
         {
             base.AppendAdditionalComponentMenuItems(menu);
-            Menu_AppendItem(menu, "include initiation code", Menu_initCode, true, includeInitCode);
+            var dd1 = Menu_AppendItem(menu, "include initiation code", Menu_initCode, true, includeInitCode);
+            //dd1.Click += (sender, e) => this.ExpireSolution(true);
         }
 
         private void Menu_initCode(object Sender, EventArgs e)
@@ -74,80 +78,82 @@ namespace SerialComponentLibrary
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-
-
             string port = null;
             int baud = 0;
-            bool handshake = true;
             bool open = false;
             string message = "";
             List<string> msgs = new List<string>();
 
-            if (!DA.GetData(0, ref port)) { return; }
-            if (!DA.GetData(1, ref baud)) { return; }
-            if (!DA.GetData(2, ref open)) { return; }
+            DA.GetData(0, ref port);
+            DA.GetData(1, ref baud);
+            DA.GetData(2, ref open);
 
-
-            
-            if (handshake == true)
+            //before open and getting ready...........................................
+            if (open == false && !thisPort.IsOpen) 
             {
-                thisPort.Handshake = System.IO.Ports.Handshake.XOnXOff;
-            }
-            else
-            {
-                thisPort.Handshake = System.IO.Ports.Handshake.None;
+                message = "Ready to connect\nConnect toggle switch to input O\nAvailable port: " + GetPortNameMessage();
             }
 
-            if(open == false && !thisPort.IsOpen)
-            {
-                string[] pNames = SerialPort.GetPortNames();
-                string portNames = "";
-                for (int i = 0; i < pNames.Length; i++)
-                {
-                    portNames += pNames[i];
-                    if (i < pNames.Length - 1) portNames += ",";
-                }
-            
-                message = "Ready to connect\nConnect toggle switch to input O\nAvailable port: " + portNames;
-
-            }
-            if(open == true && thisPort.IsOpen)
+            //port already open.......................................................
+            else if (open == true && thisPort.IsOpen) 
             {
                 message = "Machine connected";
             }
 
-            if (open == true && !thisPort.IsOpen)
+            //open port now...........................................................
+            else if (open == true && !thisPort.IsOpen) 
             {
-                try
+                try //Port could be occupied. Let's try
                 {
                     thisPort.PortName = port;
                     thisPort.BaudRate = baud;
-                    int inbuf = thisPort.ReadBufferSize;
-                    Debug.WriteLine(inbuf.ToString());
+                    thisPort.Parity = Parity.None;
+                    thisPort.StopBits = StopBits.One;
+                    thisPort.DataBits = 8;
+                    thisPort.RtsEnable = true;
+                    thisPort.DtrEnable = true;
+                    thisPort.ReadTimeout = 1000;
+                    thisPort.Handshake = System.IO.Ports.Handshake.XOnXOff;
                     thisPort.ReadBufferSize = 32768;
-                    thisPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
 
                     log.Clear();
                     thisPort.Open();
-                    message = "Machine connected";
+                    thisPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                     
-                    //initialised printer
-                    thisPort.WriteLine(Gcode.AddCheckSum("N1 M110") +"\n"); //set line umber
-                    thisPort.WriteLine(Gcode.AddCheckSum("N2 M115") + "\n"); //get firmware info
-                    N = 3;
-                    lastNsent = 2;
+                    //initialised printer.................
+                    thisPort.WriteLine(Gcode.LineSyntax("M110", ref N)); //set line number
+                    thisPort.WriteLine(Gcode.LineSyntax("M115", ref N)); //get firmware info
+                    thisPort.WriteLine(Gcode.LineSyntax("M105", ref N)); //report temp
+                    thisPort.WriteLine(Gcode.LineSyntax("M114", ref N)); //get current pos
+                    thisPort.WriteLine(Gcode.LineSyntax("M111 S7", ref N)); //debug level
+                    lastNsent = N-1;
+
+                    if(firmwareInfo.Length == 0)
+                        this.OnPingDocument().ScheduleSolution(500, CallBack); //wait for firmware info report back...
+
+                    if (includeInitCode)
+                        SerialComponentLibrary.Add2Queue.AddToQueue(initCode, ref msgs); //send init code...
+
+                    message = "Machine connected.";
+                    Connect.printerReady = true;
                 }
                 catch
                 {
-                    message = "Error opening Serial Port";
+                    message = "Error while opening Serial Port";
+                    this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, message);
+                    DA.SetData(0, message);
+                    return;
                 }
             }
-            if (open == false && thisPort.IsOpen)  //close port
+
+            //close port..............................................................
+            else if (open == false && thisPort.IsOpen)  
             {
                 thisPort.DiscardInBuffer();
                 thisPort.DiscardOutBuffer();
                 thisPort.Close();
-                message = "Printer disconnected";
+
+                #region clean/wipe static data.....................
                 log.Clear();
                 queue.Clear();
                 N = 0;
@@ -157,61 +163,18 @@ namespace SerialComponentLibrary
                 busy = false;
                 printerReady = false;
                 lastLine = "";
+                firmwareInfo = "";
+                #endregion.......................
+
+                message = "Printer disconnected. Ready to connect again.\nAvailable port: " + GetPortNameMessage();
+
                 Seastar.Extension.expireOthers("WriteQueue", this);
+                Debug.WriteLine("Port closed");
             }
 
 
-            //get firmware info from ok 2
-            int infoi = 5;
-            if(log.Count <= infoi)
-            {
-                string mInfo;
-                int x = 0;
-                do
-                {
-                    x++;
-
-                    Debug.WriteLine("Looking for firmware info");
-                } while (x < log.Count && log[x].Contains("FIRMWARE")); //loop until find ok 2
-                x--;
-
-                if (log.Count >= 1 && x >= 0  && log[x].Contains("FIRMWARE"))
-                {
-                    mInfo = log[x];
-                    message += "\n\n";
-                    message += "Firmware info : \n";
-                    message += mInfo.Remove(0, 5);
-
-                    if (includeInitCode)
-                    {
-                        string initCodee =
-                            "M105 ; get extruder temp\n" +
-                            "M114 ; get position\n" +
-                            "T0\n" +
-                            "M20 ; SD card\n" +
-                            "M80 ; AXT power on\n" +
-                            "M220 S100 ; speed factor override\n" +
-                            "M221 S100 ; extrude factor override\n" +
-                            "M111 S6 ; Debug level 6\n" +
-                            "M155 S1 ; auto send temp\n" +
-                            "G28;Home\n";
-
-                        SerialComponentLibrary.Add2Queue.AddToQueue(initCodee, ref msgs);
-                        Debug.WriteLine("Connect::Printer connected & initialised");
-                        Connect.printerReady = true;
-                    }
-                    
-                    Debug.WriteLine("Connect::Printer connected");
-                }
-                else
-                {
-                    if (open)
-                    {
-                        this.ExpireSolution(true);
-                        Debug.WriteLine("Connect::Expire");
-                    }
-                }
-            }
+            if (firmwareInfo.Length > 0)
+                message += firmwareInfo;
 
             DA.SetData(0, message);
             DA.SetDataList(1, log);
@@ -224,75 +187,81 @@ namespace SerialComponentLibrary
             get { return new Guid("2B62BEA7-CF4B-41ef-BC7F-72C47AD37431"); }
         }
 
+        private void CallBack(GH_Document gh)
+        {
+            this.ExpireSolution(true);
+        }
 
-        private static void DataReceivedHandler(
-                        object sender,
-                        SerialDataReceivedEventArgs e)
+        private string GetPortNameMessage()
+        {
+            string[] pNames = SerialPort.GetPortNames();
+            string portNames = "";
+            for (int i = 0; i < pNames.Length; i++)
+            {
+                portNames += pNames[i];
+                if (i < pNames.Length - 1)
+                    portNames += ",";
+            }
+            return portNames;
+        }
+
+        private static void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
-            Debug.WriteLine("Data Received:");
 
             if (sp.IsOpen && sp.BytesToRead > 0)
             {
-                
-                string inda = sp.ReadExisting();
-                string indata = inda;
-                string[] nn = inda.Split('\n');
+                string inData = sp.ReadLine();
+                Debug.WriteLine($"Data Received: {inData}");
 
-                //indata += DateTime.Now.ToString();
-                log.Add(indata);
-                Debug.Write("s::"+ indata + "::e");
+                inData = $"{DateTime.Now.ToString()}: {inData}";
+                log.Add(inData); //add to overall log
 
-                //find status from messga ereceived.............................
-                for (int i = 0; i < nn.Length; i++)
-                //for (int i = nn.Length - 1; i > 0; i--)
+                #region find status from messga ereceived.............................
+                //find firmware info...................................
+                if(inData.IndexOf("FIRMWARE", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    if (nn[i].Contains("ok"))  //find ok. check length??? && nn[i].Length > 3
-                    {
-                        
-                        try
-                        {
-                            string n = nn[i].Remove(0, 3);
-                            Debug.WriteLine("Connect::OK Number:" + n);
-                            ok = Convert.ToInt32(n);
-                        }
-                        catch
-                        {
-                            ok++;
-                        }
-                        //break;
-                    }
+                    firmwareInfo = inData;
+                }
 
-                    if (nn[i].Contains("Resend"))     //find resend
+                //find ok. check length??? && nn[i].Length > 3....................................
+                if (inData.IndexOf("ok", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    try
                     {
-                        string n = nn[i].Remove(0, 7);
-                        Debug.WriteLine("Connect::Resend Number:" + n);
-                        resend = Convert.ToInt32(n);
-                        //break;
+                        string n = inData.Remove(0, 3); //TODO use set difference to remove ok text
+                        Debug.WriteLine("Connect::OK Number:" + n);
+                        ok = Convert.ToInt32(n);
                     }
-                    else
+                    catch
                     {
-                        //resend = null;
-                    }
-
-                    if (nn[i].Contains("Busy") && !Connect.busy)  //find busy
-                    {
-                        Connect.busy = true;
-                        //break;
-                    }
-                    if (Connect.busy && !nn[i].Contains("Busy"))
-                    {
-                        Connect.busy = false;
-                        //break;
+                        ok++;
                     }
                 }
 
-                
+                //find resend....................................
+                if (inData.IndexOf("resend", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    string n = inData.Remove(0, 7);
+                    Debug.WriteLine("Connect::Resend Number:" + n);
+                    resend = Convert.ToInt32(n);
+                }
+                else
+                {
+                    //resend = null;
+                }
+
+                //find busy....................................
+                if (!Connect.busy && inData.IndexOf("busy", StringComparison.OrdinalIgnoreCase) >= 0)
+                    Connect.busy = true;
+                if (Connect.busy && !(inData.IndexOf("busy", StringComparison.OrdinalIgnoreCase) >= 0))
+                    Connect.busy = false;
+                #endregion
             }
         }
 
 
-        
+
 
         //private bool WaitForResult(ref string Result, int Timeout)
         //{
@@ -395,6 +364,8 @@ namespace SerialComponentLibrary
             //}
 
             //write from queue...............................................................
+            if (Connect.busy)
+                this.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Machine is Busy.");
             if (!Connect.busy && !Connect.resend.HasValue && Connect.queue.Count > 0)
             {
                 DA.SetDataList(1, Connect.queue);
@@ -448,6 +419,7 @@ namespace SerialComponentLibrary
             {
                 DA.SetData(0, "No printer connected");
             }
+
             this.ExpireSolution(true);
         }
 

@@ -40,7 +40,9 @@ namespace SeastarGrasshopper
                 "This is only for 4+ axis machine, leave empty for 3 axis machine", GH_ParamAccess.list, new Plane(Plane.WorldXY));
             pManager.AddNumberParameter("Feed Rate", "F", "Feed rate to get to this way point" +
                 "\nInput one value or values matching polyline point count", GH_ParamAccess.list);
-            pManager.AddGenericParameter("Action Block", "A", "Action block for this way point\nAccept input from Seastar Action Component", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Action Block", "A", "Action block for each way point." +
+                "\nAssign unique action at each way point by passing matching number of action blocks to way points.\nIf only one action block is supplied, all way points will execute the same action." +
+                "\nAccept input from Seastar Action Component", GH_ParamAccess.list);
             pManager[3].Optional = true;
 
             pManager.AddGenericParameter("Configuration", "config", "Configuration for checking setting", GH_ParamAccess.item);
@@ -128,12 +130,10 @@ namespace SeastarGrasshopper
             if (pts == null) return;
             DA.GetDataList<Plane>(1, dir);
             DA.GetDataList<double>(2, F);
-            if (Params.Input[3].SourceCount > 0)
-            {
+
                 DA.GetDataList<Block>(3, blks);
-            }
-            //if (Params.Input[4].SourceCount > 0)
-            //{
+            
+
             Config cfg = new Config();
             DA.GetData<Config>(4, ref cfg);
             
@@ -296,8 +296,8 @@ namespace SeastarGrasshopper
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public PathAction()
-          : base("Path Action", "PathAction",
-              "Define action at each vertex of tool path",
+          : base("Tool Action", "ToolAction",
+              "Define tool(such as extruder or spindle) state at each vertex of tool path.",
               "Seastar", "03 | Path")
         {
         }
@@ -426,8 +426,8 @@ namespace SeastarGrasshopper
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public PathPinState()
-          : base("Path Pin State", "PathPinState",
-              "Define pin state\nEach block can carry multiple pins and one state for each pin",
+          : base("Pin State Action", "PinState",
+              "Define pin state.\nEach block can carry multiple pins and states for each pin",
               "Seastar", "03 | Path")
         {
         }
@@ -537,7 +537,7 @@ namespace SeastarGrasshopper
     public class PathServo : GH_Component
     {
         public PathServo()
-          : base("Servo Position", "PathServo",
+          : base("Servo Action", "Servo",
               "Update servo position",
               "Seastar", "03 | Path")
         {
@@ -609,7 +609,7 @@ namespace SeastarGrasshopper
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public MCommand()
-          : base("M Command", "MCommand",
+          : base("M Command Action", "MCommand",
               "Create M Command",
               "Seastar", "03 | Path")
         {
@@ -825,13 +825,13 @@ namespace SeastarGrasshopper
         public override GH_Exposure Exposure => GH_Exposure.tertiary;
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Paths to join", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Seastar Path", "P", "Seastar Paths to join", GH_ParamAccess.list);
             //pManager.AddGenericParameter("Travel Behavior", "t", "Connect to Travel Behavior Component\nLeft empty if you do not wish to bridge non-touching paths", GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Seastar Path", "bp", "Joined Seastar Paths", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Seastar Path", "P", "Joined Seastar Paths", GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
@@ -868,14 +868,14 @@ namespace SeastarGrasshopper
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Paths to insert to", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Seastar Path", "P", "Seastar Paths to insert to", GH_ParamAccess.item);
             pManager.AddIntegerParameter("Index", "i", "Index to insert at", GH_ParamAccess.list);
             pManager.AddGenericParameter("Path or Action", "A", "Path or Action to insert", GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Paths", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Seastar Path", "P", "Seastar Paths", GH_ParamAccess.item);
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
@@ -909,7 +909,7 @@ namespace SeastarGrasshopper
 
         public override Guid ComponentGuid
         {
-            get { return new Guid("b51535a9-ef20-4670-9e98-22b7c8d9daaf"); }
+            get { return new Guid("10cfd883-dbdb-4216-9d41-56e97a4ba705"); }
         }
     }
 
@@ -927,7 +927,7 @@ namespace SeastarGrasshopper
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("Seastar Path", "bp", "Seastar Paths to decompose", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Seastar Path", "P", "Seastar Paths to decompose", GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
