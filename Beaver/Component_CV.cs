@@ -14,7 +14,6 @@ using Rhino;
 using Rhino.Display;
 using Rhino.Geometry;
 using OpenCvSharp;
-using OpenCvSharp.Extensions;
 using System.Threading;
 using Firefly_Bridge;
 using System.Drawing.Imaging;
@@ -321,7 +320,8 @@ namespace SeastarGrasshopper
 
             using (var window = new Window("Seastar Camera"))
             {
-                window.SetProperty(WindowProperty.AutoSize, 1);
+                
+                window.SetProperty(WindowPropertyFlags.AutoSize, 1);
                 while (sc.run)
                 {
                     matOut = sc.ReadCamera();
@@ -1546,7 +1546,7 @@ namespace SeastarGrasshopper
                         case 3:  //Circle detect
                             Cv2.MedianBlur(gray, gray, 5);
 
-                            CircleSegment[] circs = Cv2.HoughCircles(gray, HoughMethods.Gradient, 2.0, 50, camSetting[i].EDparamA * 50.0, camSetting[i].EDparamB * 20.0, 5, 1000);
+                            CircleSegment[] circs = Cv2.HoughCircles(gray, HoughModes.Gradient, 2.0, 50, camSetting[i].EDparamA * 50.0, camSetting[i].EDparamB * 20.0, 5, 1000);
                             int limm = Math.Min(circs.Length, 50);
 
 
@@ -1568,8 +1568,8 @@ namespace SeastarGrasshopper
                 {
                     msg += "Face detection applied\n";
                     Mat gray = GrayMat(matOut);
-
-                    OpenCvSharp.Rect[] faces = camSetting[i].haarCascade.DetectMultiScale(gray, 1.08, 3, HaarDetectionType.ScaleImage, new OpenCvSharp.Size(124, 124));
+                    
+                    OpenCvSharp.Rect[] faces = camSetting[i].haarCascade.DetectMultiScale(gray, 1.08, 3, HaarDetectionTypes.ScaleImage, new OpenCvSharp.Size(124, 124));
 
                     faceRec.Clear();
                     foreach (OpenCvSharp.Rect face in faces)

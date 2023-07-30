@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "TE5oiRPZku6mkBH+w89ssKRGibZ8Mbk63EUf2RygAmbOdWNvKYS60Y00zb+YEv7tsPs5ejVbKLtSLP6wpaM1dQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\antho\\source\\repos\\SeastarNC\\Beaver\\Beaver.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\antho\\.nuget\\packages\\eto.forms\\2.7.5\\eto.forms.2.7.5.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\melanchall.drywetmidi\\4.0.0\\melanchall.drywetmidi.4.0.0.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\opencvsharp4\\4.8.0.20230708\\opencvsharp4.4.8.0.20230708.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

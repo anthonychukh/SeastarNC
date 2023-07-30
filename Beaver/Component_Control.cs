@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using Seastar;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
+using Eto.Forms;
+
 
 namespace SerialComponentLibrary
 {
@@ -23,7 +25,8 @@ namespace SerialComponentLibrary
         public static int ok = 0; //last ok signal
         public static int? resend = null;
         public static bool busy = false;
-        public static List<string> log = new List<string>();
+        //public static List<string> logQueue = new List<string>();
+        public static Queue<string> logQueue = new Queue<string>();
         public static List<string> printerInfo = new List<string>();
         public static Queue<string> queue = new Queue<string>();
         //public static Queue<string> recentSent = new Queue<string>();
@@ -76,6 +79,25 @@ namespace SerialComponentLibrary
             includeInitCode = !includeInitCode;
         }
 
+        public override void AddedToDocument(GH_Document document)
+        {
+            base.AddedToDocument(document);
+            int count = this.OnPingDocument().ActiveObjects().FindAll(X => X.Name == "Register GSuite Access").Count;
+
+            if (count > 1) //An registry component already on canvas, do not allow duplicate...
+            {
+                Eto.Forms.MessageBox.Show("Connect Component already exists on canvas. Only one component allowed per canvas.", null, Eto.Forms.MessageBoxButtons.OK, Eto.Forms.MessageBoxType.Error);
+                document.RemoveObject(this, false);
+                return;
+            }
+        }
+
+        public override void RemovedFromDocument(GH_Document document)
+        {
+            ClosePort();
+            base.RemovedFromDocument(document);
+        }
+
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             string port = null;
@@ -116,7 +138,7 @@ namespace SerialComponentLibrary
                     thisPort.Handshake = System.IO.Ports.Handshake.XOnXOff;
                     thisPort.ReadBufferSize = 32768;
 
-                    log.Clear();
+                    logQueue.Clear();
                     thisPort.Open();
                     thisPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                     
@@ -149,25 +171,8 @@ namespace SerialComponentLibrary
             //close port..............................................................
             else if (open == false && thisPort.IsOpen)  
             {
-                thisPort.DiscardInBuffer();
-                thisPort.DiscardOutBuffer();
-                thisPort.Close();
-
-                #region clean/wipe static data.....................
-                log.Clear();
-                queue.Clear();
-                N = 0;
-                lastNsent = 0;
-                ok = 0;
-                resend = null;
-                busy = false;
-                printerReady = false;
-                lastLine = "";
-                firmwareInfo = "";
-                #endregion.......................
-
+                ClosePort();
                 message = "Printer disconnected. Ready to connect again.\nAvailable port: " + GetPortNameMessage();
-
                 Seastar.Extension.expireOthers("WriteQueue", this);
                 Debug.WriteLine("Port closed");
             }
@@ -177,7 +182,7 @@ namespace SerialComponentLibrary
                 message += firmwareInfo;
 
             DA.SetData(0, message);
-            DA.SetDataList(1, log);
+            DA.SetDataList(1, logQueue);
         }
 
         protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cntConnect;
@@ -215,11 +220,14 @@ namespace SerialComponentLibrary
                 Debug.WriteLine($"Data Received: {inData}");
 
                 inData = $"{DateTime.Now.ToString()}: {inData}";
-                log.Add(inData); //add to overall log
+                //logQueue.Add(inData); //add to overall log
+                logQueue.Enqueue(inData);
+                if(logQueue.Count > 1E6) //Keep log size
+                    logQueue.Dequeue();
 
                 #region find status from messga ereceived.............................
                 //find firmware info...................................
-                if(inData.IndexOf("FIRMWARE", StringComparison.OrdinalIgnoreCase) >= 0)
+                if (inData.IndexOf("FIRMWARE", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     firmwareInfo = inData;
                 }
@@ -260,7 +268,27 @@ namespace SerialComponentLibrary
             }
         }
 
+        private static void ClosePort()
+        {
+            if (!thisPort.IsOpen)
+                return;
 
+            thisPort.DiscardInBuffer();
+            thisPort.DiscardOutBuffer();
+            thisPort.Close();
+
+            logQueue.Clear();
+            queue.Clear();
+            N = 0;
+            lastNsent = 0;
+            ok = 0;
+            resend = null;
+            busy = false;
+            printerReady = false;
+            lastLine = "";
+            firmwareInfo = "";
+
+        }
 
 
         //private bool WaitForResult(ref string Result, int Timeout)
@@ -320,6 +348,19 @@ namespace SerialComponentLibrary
                 "Command can only be sent when the printer is ready to receive it\n" +
                 "If queue get too long, reduce subdivision or increase interval between commands", GH_ParamAccess.list);
             pManager.AddTextParameter("Message", "msg", "Message", GH_ParamAccess.item);
+        }
+
+        public override void AddedToDocument(GH_Document document)
+        {
+            base.AddedToDocument(document);
+            int count = this.OnPingDocument().ActiveObjects().FindAll(X => X.Name == "Register GSuite Access").Count;
+
+            if (count > 1) //An registry component already on canvas, do not allow duplicate...
+            {
+                Eto.Forms.MessageBox.Show("Connect Component already exists on canvas. Only one component allowed per canvas.", null, Eto.Forms.MessageBoxButtons.OK, Eto.Forms.MessageBoxType.Error);
+                document.RemoveObject(this, false);
+                return;
+            }
         }
 
         protected override void SolveInstance(IGH_DataAccess DA)
@@ -391,7 +432,7 @@ namespace SerialComponentLibrary
                     try
                     {
                         SerialComponentLibrary.Connect.thisPort.WriteLine(package);
-                        Connect.log.Add(package);
+                        Connect.logQueue.Enqueue(package);
                     }
                     catch
                     {
@@ -407,7 +448,7 @@ namespace SerialComponentLibrary
             {
                 try
                 {
-                    DA.SetDataList(0, Connect.log);  //show log
+                    DA.SetDataList(0, Connect.logQueue);  //show log
                 }
                 catch
                 {
@@ -453,7 +494,7 @@ namespace SerialComponentLibrary
         {
             pManager.AddTextParameter("string", "T", "Text to Send", GH_ParamAccess.list);
             pManager.AddBooleanParameter("Send", "S", "Set true to send command(s) to queue\n" +
-                "Commands in queue will be sent asap", GH_ParamAccess.item, false);
+                "Commands in queue will be sent to machine asap. See queue in Connect component.", GH_ParamAccess.item, false);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -470,29 +511,34 @@ namespace SerialComponentLibrary
         {
             bool send = false;
             DA.GetData<bool>(1, ref send);
-            if (!send && !Connect.printerReady)
+
+            if (!SerialComponentLibrary.Connect.thisPort.IsOpen)
+            {
+                DA.SetData(0, "No printer connected");
+                return; //Do not send
+            }
+            else if(!Connect.printerReady)
             {
                 DA.SetData(0, "Printer not ready");
                 return;  //Do not send
             }
+            else if (!send)
+            {
+                DA.SetData(0, "Set Send input to true to start sending.");
+                return;  //Do not send
+            }
 
-            //string message = null;
+            //string message = null; 
             List<string> textin = new List<string>();
             List<string> text = new List<string>();
             List<string> msg = new List<string>();
 
-            if (!DA.GetDataList(0, textin)) { return; }
+            if (!DA.GetDataList(0, textin))
+                return;
 
             if (Connect.printerReady)
-            {
                 AddToQueue(textin, ref msg);
-            }
 
-            //not connected........................................................
-            if (!SerialComponentLibrary.Connect.thisPort.IsOpen)
-            {
-                msg.Add("No printer connected");
-            }
 
             DA.SetDataList(0, msg);
         }
@@ -512,9 +558,10 @@ namespace SerialComponentLibrary
         /// <param name="msg">Message about this operation</param>
         public static void AddToQueue(List<string> _Data, ref List<string> msg)
         {
-            //msg = new List<string>();
-            //add \n if havent.................................................
+            
             List<string> text = new List<string>();
+
+            //split \n to individual lines.................................................
             for (int i = 0; i < _Data.Count; i++)
             {
                 if (_Data[i].Contains("\n"))
@@ -534,20 +581,23 @@ namespace SerialComponentLibrary
                 for (int i = 0; i < text.Count; i++)
                 {
 
-                    if (text[i].Contains(";")) //remove comment
+                    if (text[i].Contains(";")) //remove comment...
                     {
                         text[i] = text[i].Split(';')[0];
                     }
                     if (text[i].Length > 0)
                     {
-                        text[i] = "N" + Connect.N.ToString() + " " + text[i];
-                        text[i] = AddCheckSum(text[i]);
-                        if(Connect.lastLine.Contains("G28") && text[i].Contains("G28")) { continue; } //no repeating g28
+                        //text[i] = "N" + Connect.N.ToString() + " " + text[i];
+                        //text[i] = AddCheckSum(text[i]);
+
+                        text[i] = Gcode.LineSyntax(text[i], ref Connect.N);
+
+                        if(Connect.lastLine.Contains("G28") && text[i].Contains("G28")) { continue; } //no repeating g28...
                         Connect.queue.Enqueue(text[i]);
                         Connect.lastLine = text[i];
 
                         msg.Add(text[i] + " sent to queue");
-                        Connect.N++;
+                        //Connect.N++;
                     }
                 }
             }
