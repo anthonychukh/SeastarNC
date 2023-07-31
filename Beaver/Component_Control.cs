@@ -8,7 +8,8 @@ using Seastar;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using Eto.Forms;
-
+using Grasshopper.GUI;
+using System.Drawing;
 
 namespace SerialComponentLibrary
 {
@@ -32,7 +33,7 @@ namespace SerialComponentLibrary
         //public static Queue<string> recentSent = new Queue<string>();
         public static bool printerReady = false;
         public static int queueSize = 5;  //desire queue size in printer memory. Ready to send more when ok [N] = lastNsent - queueSize
-        public static string initCode =
+        public string initCode =
             "M105 ; get extruder temp\n" +
             "M114 ; get position\n" +
             "T0\n" +
@@ -63,26 +64,25 @@ namespace SerialComponentLibrary
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddTextParameter("Message", "M", "Message", GH_ParamAccess.item);
-            pManager.AddTextParameter("debug", "debug", "debug", GH_ParamAccess.list);
+            //pManager.AddTextParameter("debug", "debug", "debug", GH_ParamAccess.list);
         }
 
         public bool includeInitCode = true;
         protected override void AppendAdditionalComponentMenuItems(ToolStripDropDown menu)
         {
             base.AppendAdditionalComponentMenuItems(menu);
-            var dd1 = Menu_AppendItem(menu, "include initiation code", Menu_initCode, true, includeInitCode);
+            var dd1 = Menu_AppendItem(menu, "include start code", (sender,e) => includeInitCode = !includeInitCode, true, includeInitCode);
+            dd1.ToolTipText += "If true, initiation code will be sent when machine is first connected.";
             //dd1.Click += (sender, e) => this.ExpireSolution(true);
-        }
-
-        private void Menu_initCode(object Sender, EventArgs e)
-        {
-            includeInitCode = !includeInitCode;
+            //var dd2 = Menu_AppendItem(menu, "Initiation code");
+            //Menu_AppendTextItem(dd2.DropDown, initCode, null, (sender, text) => initCode = text, true);
+            //dd2.DropDownItems[1].ToolTipText = "Initiation code to be sent.";
         }
 
         public override void AddedToDocument(GH_Document document)
         {
             base.AddedToDocument(document);
-            int count = this.OnPingDocument().ActiveObjects().FindAll(X => X.Name == "Register GSuite Access").Count;
+            int count = this.OnPingDocument().ActiveObjects().FindAll(X => X.Name == this.Name).Count;
 
             if (count > 1) //An registry component already on canvas, do not allow duplicate...
             {
@@ -177,12 +177,14 @@ namespace SerialComponentLibrary
                 Debug.WriteLine("Port closed");
             }
 
-
             if (firmwareInfo.Length > 0)
+            {
+                message += "\n";
                 message += firmwareInfo;
+            }
 
             DA.SetData(0, message);
-            DA.SetDataList(1, logQueue);
+            //DA.SetDataList(1, logQueue);
         }
 
         protected override System.Drawing.Bitmap Icon => Seastar.Properties.Resources.cntConnect;
@@ -353,7 +355,7 @@ namespace SerialComponentLibrary
         public override void AddedToDocument(GH_Document document)
         {
             base.AddedToDocument(document);
-            int count = this.OnPingDocument().ActiveObjects().FindAll(X => X.Name == "Register GSuite Access").Count;
+            int count = this.OnPingDocument().ActiveObjects().FindAll(X => X.Name == this.Name).Count;
 
             if (count > 1) //An registry component already on canvas, do not allow duplicate...
             {

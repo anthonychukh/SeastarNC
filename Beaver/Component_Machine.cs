@@ -24,6 +24,29 @@ namespace SeastarGrasshopper
 
         public override GH_Exposure Exposure => GH_Exposure.primary;
 
+        public static string defStartCode =
+            "M105 ; get extruder temp\n" +
+            "M114 ; get position\n" +
+            "T0\n" +
+            "M20 ; SD card\n" +
+            "M80 ; AXT power on\n" +
+            "M220 S100 ; speed factor override\n" +
+            "M221 S100 ; extrude factor override\n" +
+            "M111 S6 ; Debug level 6\n" +
+            "M155 S1 ; auto send temp\n" +
+            "G28;Home\n";
+        public static string defEndCode =
+            "G91 ; relative coordinates\n" +
+            "G1 E-1 F300 ; retract filament a bit before lifting\n" +
+            "G1 Z+5 E-5 F6000 ; raise platform from current position\n" +
+            "G28 X0 Y0 ; home axis\n" +
+            "G90 ; absolute coordinates\n" +
+            "G92 E0 ; reset extruder\n" +
+            "M104 S0 ; turn off hotend\n" +
+            "M140 S0 ; turn off heat bed\n" +
+            "M107 ; turn off fans\n" +
+            "M84 ; disable motors\n";
+
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
@@ -40,6 +63,8 @@ namespace SeastarGrasshopper
             pManager.AddPointParameter("Park Position", "P", "Park position", GH_ParamAccess.item, new Point3d(0, 0, 0));
             pManager.AddGenericParameter("Rotational Axes", "R", "Rotational axes mechanism\nThos will affect how ABC axes are exported in Gcode", GH_ParamAccess.item);
             pManager[6].Optional = true;
+            pManager.AddTextParameter("Start Gcode", "SG", "Start Gcode to be sent to machine whenever machine is first connected.", GH_ParamAccess.item, defStartCode);
+            pManager.AddTextParameter("End Gcode", "SG", "End Gcode to be sent to machine whenever machine is disconnected.", GH_ParamAccess.item, defStartCode);
         }
 
         /// <summary>
