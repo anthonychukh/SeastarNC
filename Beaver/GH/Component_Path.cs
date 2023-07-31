@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Seastar;
+using Seastar.Core;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
@@ -45,9 +45,9 @@ namespace SeastarGrasshopper
                 "\nAccept input from Seastar Action Component", GH_ParamAccess.list);
             pManager[3].Optional = true;
 
-            pManager.AddGenericParameter("Configuration", "config", "Configuration for checking setting", GH_ParamAccess.item);
-            pManager[4].Optional = true;
-            pManager.AddIntegerParameter("Tool", "T", "Tool to use", GH_ParamAccess.list, 0);
+            //pManager.AddGenericParameter("Configuration", "config", "Configuration for checking setting", GH_ParamAccess.item);
+            //pManager[4].Optional = true;
+            pManager.AddIntegerParameter("Tool", "T", "Index of Tool to use", GH_ParamAccess.list, 0);
         }
 
         /// <summary>
@@ -134,10 +134,10 @@ namespace SeastarGrasshopper
                 DA.GetDataList<Block>(3, blks);
             
 
-            Config cfg = new Config();
-            DA.GetData<Config>(4, ref cfg);
+            //Config cfg = new Config();
+            //DA.GetData<Config>(4, ref cfg);
             
-            DA.GetDataList<int>(5, T);
+            DA.GetDataList<int>(4, T);
 
             List<Block> wayPoints = new List<Block>();
 
@@ -170,15 +170,8 @@ namespace SeastarGrasshopper
 
             }
 
-            Path path = new Path(wayPoints, cfg);
+            Path path = new Path(wayPoints);
             PathOut = path;
-
-
-            //cross check Config..................
-            //if (this.Params.Input[6].SourceCount > 0)
-            //{
-
-            //}
 
             DA.SetData(0, path);
             DA.SetData(1, wayPoints.Count);
@@ -928,6 +921,8 @@ namespace SeastarGrasshopper
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddGenericParameter("Seastar Path", "P", "Seastar Paths to decompose", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Machine Configuration", "C", "Machine Configuration", GH_ParamAccess.item);
+            pManager[1].Optional = true;
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -1061,13 +1056,16 @@ namespace SeastarGrasshopper
             DA.GetData<Config>(4, ref config);
          //   msg += config.Machine.rAxes.ToString();
 
+            if(config.Machine == null)
+                this.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "configuration should contain machine.");
+             
             Gcode gcode = new Gcode(pth, psc, absPos, absE, config);
             gcode.UpdateLines(ignoreOffset, out msg);
             Command cmd = new Command();
 
             if (includeStartEnd)
             {
-                DA.SetData(0, cmd.StartingGcode + gcode.ToString() + cmd.EndingGcode);
+                DA.SetData(0, cmd.StartingGcode + gcode.ToString() + cmd.EndingGcode); //TODO use machine start end code
             }
             else
             {

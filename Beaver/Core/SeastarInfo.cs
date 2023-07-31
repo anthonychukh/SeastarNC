@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace BeaverGrasshopper
 {
-    public class BeaverInfo : GH_AssemblyInfo
+    public class SeastarInfo : GH_AssemblyInfo
     {
         public override string Name
         {
@@ -50,7 +50,7 @@ namespace BeaverGrasshopper
             get
             {
                 //Return a string representing your preferred contact details.
-                return "chukha@gsd.harvard.edu";
+                return "anthonychukh@gmail.com";
             }
         }
     }

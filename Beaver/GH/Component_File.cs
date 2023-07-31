@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using System.Resources;
-using Seastar;
+using Seastar.Core;
 using System.IO;
 
 namespace BeaverGrasshopper
@@ -13,7 +13,7 @@ namespace BeaverGrasshopper
     {
         public FileSaver()
           : base("File Saver", "FileSave",
-              "Save text file to a location and extension",
+              "Save text file to a folder location.",
               "Seastar" , "04 | File")
         {
         }
@@ -73,7 +73,7 @@ namespace BeaverGrasshopper
     {
         public FileDate()
           : base("File Name by Date", "FileDate",
-              "File name in format of YYMMDD",
+              "Use cuurent data to create file name in format of YYMMDD. Concat with additional infomation you need.",
               "Seastar", "04 | File")
         {
         }
@@ -127,36 +127,4 @@ namespace BeaverGrasshopper
             get { return new Guid("bbb3d4cb-3857-48e4-914d-75f1a4ed0165"); }
         }
     }
-
-    /*public class FileSaver : GH_Component
-    {
-        public FileSaver()
-          : base("File Saver", "FileSave",
-              "Save text file to a location and extension",
-              "Seastar", "04 | File")
-        {
-        }
-
-        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
-        {
-            
-        }
-
-        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
-        {
-            
-        }
-
-        protected override void SolveInstance(IGH_DataAccess DA)
-        {
-            
-        }
-
-        protected override System.Drawing.Bitmap Icon => Resources.joker;
-
-        public override Guid ComponentGuid
-        {
-            get { return new Guid("bbb3d4cb-3857-48e4-914d-75f1a4ed0165"); }
-        }
-    }*/
 }

@@ -4,6 +4,7 @@ using Grasshopper.Kernel.Types;
 using Melanchall.DryWetMidi.Smf;
 using Melanchall.DryWetMidi.Smf.Interaction;
 using Rhino.Geometry;
+using Seastar.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace Seastar
         {
         }
 
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddTextParameter("File Path", "F", "File path to midi text file", GH_ParamAccess.item);
@@ -104,6 +106,7 @@ namespace Seastar
               "Seastar", "Midi")
         {
         }
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {

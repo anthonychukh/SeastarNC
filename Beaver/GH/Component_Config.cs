@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Grasshopper.Kernel;
 using Rhino.Geometry;
-using Seastar;
+using Seastar.Core;
 using Grasshopper.Kernel.Data;
 using Grasshopper;
 using System.Linq;

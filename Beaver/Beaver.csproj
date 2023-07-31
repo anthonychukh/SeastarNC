@@ -66,26 +66,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Beaver.cs" />
-    <Compile Include="Component_Control.cs" />
-    <Compile Include="Component_midi.cs" />
-    <Compile Include="Component_Sim.cs" />
-    <Compile Include="Component_CV.cs" />
-    <Compile Include="Component_Config.cs" />
-    <Compile Include="BeaverInfo.cs" />
-    <Compile Include="Component_File.cs" />
-    <Compile Include="Component_Path.cs" />
-    <Compile Include="Component_Control2.cs" />
-    <Compile Include="Component_Machine.cs" />
-    <Compile Include="DropShadow.cs">
+    <Compile Include="Core\Config.cs" />
+    <Compile Include="Core\Extension.cs" />
+    <Compile Include="Core\Machines.cs" />
+    <Compile Include="Core\Midi.cs" />
+    <Compile Include="Core\Paths.cs" />
+    <Compile Include="GH\Component_Control.cs" />
+    <Compile Include="GH\Component_midi.cs" />
+    <Compile Include="GH\Component_Sim.cs" />
+    <Compile Include="GH\Component_CV.cs" />
+    <Compile Include="GH\Component_Config.cs" />
+    <Compile Include="Core\SeastarInfo.cs" />
+    <Compile Include="GH\Component_File.cs" />
+    <Compile Include="GH\Component_Path.cs" />
+    <Compile Include="GH\Component_Control2.cs" />
+    <Compile Include="GH\Component_Machine.cs" />
+    <Compile Include="GH\DropShadow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RoundedRectangle.cs" />
-    <Compile Include="SimForm.cs">
+    <Compile Include="Core\RoundedRectangle.cs" />
+    <Compile Include="GH\JoggerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SimForm.Designer.cs">
-      <DependentUpon>SimForm.cs</DependentUpon>
+    <Compile Include="GH\JoggerForm.Designer.cs">
+      <DependentUpon>JoggerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -95,8 +99,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SimForm.resx">
-      <DependentUpon>SimForm.cs</DependentUpon>
+    <EmbeddedResource Include="GH\JoggerForm.resx">
+      <DependentUpon>JoggerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

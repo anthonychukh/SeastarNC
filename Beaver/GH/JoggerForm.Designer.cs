@@ -18,7 +18,7 @@ namespace Seastar
         }
     }
 
-    partial class SimForm
+    partial class JoggerForm
     {
         /// <summary>
         /// Required designer variable.

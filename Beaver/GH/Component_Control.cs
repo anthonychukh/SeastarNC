@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Windows.Forms;
-using Seastar;
+using Seastar.Core;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using Eto.Forms;
@@ -173,7 +173,7 @@ namespace SerialComponentLibrary
             {
                 ClosePort();
                 message = "Printer disconnected. Ready to connect again.\nAvailable port: " + GetPortNameMessage();
-                Seastar.Extension.expireOthers("WriteQueue", this);
+                Seastar.Core.Extension.expireOthers("WriteQueue", this);
                 Debug.WriteLine("Port closed");
             }
 

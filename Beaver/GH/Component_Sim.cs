@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Seastar;
+using Seastar.Core;
 using Grasshopper;
 using Grasshopper.GUI;
 using Grasshopper.Kernel;
@@ -375,7 +375,7 @@ namespace SeastarGrasshopper
 
             if (start)
             {
-                Form e = new Seastar.SimForm();
+                Form e = new Seastar.JoggerForm();
 #if DEBUG
                 this.AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "form opening");
 #endif
@@ -390,7 +390,7 @@ namespace SeastarGrasshopper
         public Point3d lastPos;
         public Point3d lastCoor;
         public Point3d nextCoor;
-        Seastar.SimForm frm;
+        Seastar.JoggerForm frm;
         public static Thread thr;
         public static bool run = true;
 
@@ -402,7 +402,7 @@ namespace SeastarGrasshopper
         }
         public void DisplayForm()
         {
-            frm = new Seastar.SimForm();
+            frm = new Seastar.JoggerForm();
             Grasshopper.GUI.GH_WindowsFormUtil.CenterFormOnCursor(frm, true);
             frm.Show(Grasshopper.Instances.DocumentEditor);
         }

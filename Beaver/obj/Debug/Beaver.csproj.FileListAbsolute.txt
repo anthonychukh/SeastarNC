@@ -81,7 +81,6 @@ C:\Users\antho\source\repos\SeastarNC\Beaver\bin\OpenCvSharp.dll
 C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Beaver.csproj.AssemblyReference.cache
 C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Interop.WIA.dll
 C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Beaver.csproj.ResolveComReference.cache
-C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Seastar.SimForm.resources
 C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Seastar.Properties.Resources.resources
 C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Beaver.csproj.GenerateResource.cache
 C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Beaver.csproj.CoreCompileInputs.cache
@@ -98,3 +97,4 @@ C:\Users\antho\source\repos\SeastarNC\Beaver\bin\System.Memory.dll
 C:\Users\antho\source\repos\SeastarNC\Beaver\bin\System.Numerics.Vectors.dll
 C:\Users\antho\source\repos\SeastarNC\Beaver\bin\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\antho\source\repos\SeastarNC\Beaver\bin\System.ValueTuple.dll
+C:\Users\antho\source\repos\SeastarNC\Beaver\obj\Debug\Seastar.JoggerForm.resources

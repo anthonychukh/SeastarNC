@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace Seastar
 {
-    public partial class SimForm : Form
+    public partial class JoggerForm : Form
     {
 
         private bool Drag;
@@ -131,7 +131,7 @@ namespace Seastar
         }
         private Dropshadow shadow;
 
-        public SimForm()
+        public JoggerForm()
         {
             InitializeComponent();
             m_aeroEnabled = false;

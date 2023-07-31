@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Seastar;
+using Seastar.Core;
 using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
@@ -61,7 +61,7 @@ namespace SeastarGrasshopper
             pManager.AddGenericParameter("Tool", "t", "List of tools the machine can use", GH_ParamAccess.list);
             pManager[4].Optional = true;
             pManager.AddPointParameter("Park Position", "P", "Park position", GH_ParamAccess.item, new Point3d(0, 0, 0));
-            pManager.AddGenericParameter("Rotational Axes", "R", "Rotational axes mechanism\nThos will affect how ABC axes are exported in Gcode", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Rotational Axes", "RA", "Rotational axes mechanism\nThos will affect how ABC axes are exported in Gcode", GH_ParamAccess.item);
             pManager[6].Optional = true;
             pManager.AddTextParameter("Start Gcode", "SG", "Start Gcode to be sent to machine whenever machine is first connected.", GH_ParamAccess.item, defStartCode);
             pManager.AddTextParameter("End Gcode", "SG", "End Gcode to be sent to machine whenever machine is disconnected.", GH_ParamAccess.item, defStartCode);
