@@ -12,10 +12,14 @@ using Grasshopper.Kernel.Types;
 using Rhino;
 using Rhino.Display;
 using Rhino.Geometry;
+using Rhino.Render.ChangeQueue;
+using static System.Collections.Specialized.BitVector32;
 
 namespace SeastarGrasshopper
 {
     
+    //TODO
+    //combine point and plane input
     public class PathTranslate : GH_Component //create for both printing and milling
     {
         /// <summary>
@@ -48,6 +52,7 @@ namespace SeastarGrasshopper
             //pManager.AddGenericParameter("Configuration", "config", "Configuration for checking setting", GH_ParamAccess.item);
             //pManager[4].Optional = true;
             pManager.AddIntegerParameter("Tool", "T", "Index of Tool to use", GH_ParamAccess.list, 0);
+            //pManager.AddGenericParameter("Tool", "T", "Tool to use", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -99,22 +104,6 @@ namespace SeastarGrasshopper
             //add way point to point list................................................
             if (IsCurve)
             {
-                //Curve crv = new PolyCurve();
-                //DA.GetData<Curve>(0, ref crv);
-                //IsPl = crv.TryGetPolyline(out pl);
-                //IsArc = crv.TryGetArc(out arc);
-                //goOnCir = crv.TryGetCircle(out cir);
-
-                ////if is polyline, add to point list and proceed
-                //if (IsPl) 
-                //{
-                //    IsPlanar = crv.TryGetPlane(out Plane pTemp);
-                //    IsFlatXY = (pTemp.ZAxis.IsParallelTo(Vector3d.ZAxis) != 0);
-                //    for (int i = 0; i < pl.Count; i++)
-                //    {
-                //        pts.Add(pl[i]); //add polyline waypoint to point list
-                //    }
-                //}
                 this.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Please convert polyline to point list");
                 return;
             }
@@ -283,18 +272,96 @@ namespace SeastarGrasshopper
         }
     }
 
-    public class PathAction : GH_Component //create for both printing and milling
+    public class PathMove : GH_Component
+    {
+        public PathMove()
+          : base("Movement Paths", "Move",
+              "Move path",
+              "Seastar", "03 | Path")
+        {
+        }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.AddPlaneParameter("TCP", "TCP", "Tool center point(TCP)", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Feedrate", "F", "Feedrate to each TCP location.\n" +
+                "Input equal count of feedrate to TCP data count to get a unique feedrate at each TCP, or\n" +
+                "just supply one value and all move through all TCP at the same rate", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Action Block", "A", "Action block to be executed at each location\n" +
+                "Input equal count of action block to TCP data count to get a unique action at each TCP, or\n" +
+                "just supply one value and all move through all TCP with the same action.", GH_ParamAccess.list);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.AddGenericParameter("Path", "P", "Path", GH_ParamAccess.list);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+
+        }
+
+        protected override System.Drawing.Bitmap Icon => Resources.joker;
+
+        public override Guid ComponentGuid
+        {
+            get { return new Guid("0f790aa1-6a6d-4c21-b19a-c0c5883ac58c"); }
+        }
+    }
+
+    public class PathExtrude : GH_Component
+    {
+        public PathExtrude()
+          : base("Extrusion Paths", "Extrude",
+              "Extrusion path",
+              "Seastar", "03 | Path")
+        {
+        }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.AddPlaneParameter("TCP", "TCP", "Tool center point(TCP)", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Feedrate", "F", "Feedrate to each TCP location.\n" +
+                "Input equal count of feedrate to TCP data count to get a unique feedrate at each TCP, or\n" +
+                "just supply one value and all move through all TCP at the same rate", GH_ParamAccess.list);
+            pManager.AddTextParameter("Extruder name", "E", "Name of extruder to use", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Extrusion Rate", "ER", "Extrusion rate equals to(extrusion width x extrusion height), i.e.cross sectional area of the extrusion.", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Action Block", "A", "Action block to be executed at each location\n" +
+                "Input equal count of action block to TCP data count to get a unique action at each TCP, or\n" +
+                "just supply one value and all move through all TCP with the same action.", GH_ParamAccess.list);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.AddGenericParameter("Path", "P", "Path", GH_ParamAccess.list);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+
+        }
+
+        protected override System.Drawing.Bitmap Icon => Resources.joker;
+
+        public override Guid ComponentGuid
+        {
+            get { return new Guid("7c7d2961-4cf2-485f-b2a1-3b0c7fa35ef9"); }
+        }
+    }
+
+    public class ToolAction : GH_Component //create for both printing and milling
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public PathAction()
+        public ToolAction()
           : base("Tool Action", "ToolAction",
               "Define tool(such as extruder or spindle) state at each vertex of tool path.",
               "Seastar", "03 | Path")
         {
         }
-        public override GH_Exposure Exposure => GH_Exposure.secondary;
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
 
         /// <summary>
         /// Registers all the input parameters for this component.
@@ -413,12 +480,12 @@ namespace SeastarGrasshopper
         }
     }
 
-    public class PathPinState : GH_Component //create for both printing and milling
+    public class ActionPinState : GH_Component //create for both printing and milling
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public PathPinState()
+        public ActionPinState()
           : base("Pin State Action", "PinState",
               "Define pin state.\nEach block can carry multiple pins and states for each pin",
               "Seastar", "03 | Path")
@@ -527,9 +594,9 @@ namespace SeastarGrasshopper
         
     }
 
-    public class PathServo : GH_Component
+    public class ActionServo : GH_Component
     {
-        public PathServo()
+        public ActionServo()
           : base("Servo Action", "Servo",
               "Update servo position",
               "Seastar", "03 | Path")
@@ -596,12 +663,12 @@ namespace SeastarGrasshopper
         }
     }
 
-    public class MCommand : GH_Component //create for both printing and milling
+    public class ActionMCommand : GH_Component //create for both printing and milling
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public MCommand()
+        public ActionMCommand()
           : base("M Command Action", "MCommand",
               "Create M Command",
               "Seastar", "03 | Path")
@@ -766,12 +833,49 @@ namespace SeastarGrasshopper
         }
     }
 
-    public class PathER : GH_Component
+    public class ToolExtruder : GH_Component
     {
-        public PathER()
+        public ToolExtruder()
+          : base("Extrude Action", "Extrude",
+              "Create extrusion",
+              "Seastar", "03 | Path")
+        {
+        }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.AddTextParameter("Extruder Name", "N", "Name of extruder. If it is different from previous, tool change gcode will be inserted.", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Extrusion Rate", "ER", "Extrusion rate equals to (extrusion width x extrusion height), i.e. cross sectional area of the extrusion.", GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.AddGenericParameter("Tool Action Block", "T", "Extrusion tool action block.\nConnect to PathTranslate component", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+
+        }
+
+        protected override System.Drawing.Bitmap Icon => Resources.joker;
+
+        public override Guid ComponentGuid
+        {
+            get { return new Guid("b51535a9-ef20-4670-9e98-22b7c8d9daaf"); }
+        }
+    }
+
+
+    //TODO
+    //Extrude using machine extruder. pick tool number
+    //Machine config accept extruder
+    public class ToolExtrusionRate : GH_Component
+    {
+        public ToolExtrusionRate()
           : base("Path Extrusion Rate", "PathER",
               "Calculate path extrusion rate\n" +
-                "Extrusion rate equals to extrusion width x extrusion height",
+                "Extrusion rate equals to extrusion width x extrusion height, i.e. cross sectional area of the extrusion.",
               "Seastar", "03 | Path")
         {
         }
@@ -820,6 +924,7 @@ namespace SeastarGrasshopper
         {
             pManager.AddGenericParameter("Seastar Path", "P", "Seastar Paths to join", GH_ParamAccess.list);
             //pManager.AddGenericParameter("Travel Behavior", "t", "Connect to Travel Behavior Component\nLeft empty if you do not wish to bridge non-touching paths", GH_ParamAccess.item);
+
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)

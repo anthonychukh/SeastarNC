@@ -24,6 +24,126 @@ namespace Seastar.Core
         custom
     }
 
+    public interface ITool
+    {
+        string ToolName { get; }
+        string Descriptions { get; set; }
+        /// <summary> Tool offset from end effector origin. </summary>
+        double OffsetX { get; set; }
+        /// <summary> Tool offset from end effector origin. </summary>
+        double OffsetY { get; set; }
+        /// <summary> Tool offset from end effector origin. </summary>
+        double OffsetZ { get; set; }
+        /// <summary> Tool changing gcode. </summary>
+        string ToolChangeGcode { get; set; }
+        Guid Guid { get; }
+    }
+
+    public class Extruder : ITool
+    {
+        string toolName = "";
+        string descriptions = "";
+        double diameter = 0;
+        double offsetX = 0;
+        double offsetY = 0;
+        double offsetZ = 0;
+        string toolChangeGCode = "";
+
+        public string ToolName { get { return toolName; } }
+        public string Descriptions { get { return descriptions; } set { descriptions = value; } }
+        public double OffsetX { get { return offsetX; } set { offsetX = value; } }
+        public double OffsetY { get { return offsetY; } set { offsetY = value; } }
+        public double OffsetZ { get { return offsetZ; } set { offsetZ = value; } }
+        public string ToolChangeGcode { get { return toolChangeGCode; } set { toolChangeGCode = value; } }
+        public Guid Guid => new Guid();
+
+        public double Diameter { get { return diameter; } set { diameter = value; } }
+        /// <summary> List of all filament this tool can use. </summary>
+        public Filament Filaments { get; set; }
+
+        public Extruder(string _name,  string _description, double _diameter, Filament _filaments)
+        {
+            toolName = _name;
+            descriptions = _description;
+            diameter = _diameter;
+            Filaments = _filaments;
+        }
+    }
+
+    /*
+ * filament_name,
+        filament_diameter,
+        retract_speed,
+        retract_length,
+        filament_density,
+        filament_cost,
+        disable_fan_first_layers,
+        temperature,
+        bed_temperature
+ */
+    public class Filament
+    {
+        public string Name { get;}
+        public double Diameter { get; }
+        public double Temperature { get; set; } = 0.0;
+        public double BedTemperature { get; set; } = 0.0;
+        public double RetractSpeed { get; set; } = 0.0;
+        public double RetractDistance { get; set; } = 0.0;
+        public string MaterialChangeGCode { get; set; } = "";
+        public Guid Guid => new Guid();
+
+        public Filament(string _name, double _diameter, double _temperature, double _bedTemp)
+        {
+            Name = _name;
+            Diameter = _diameter;
+            Temperature = _temperature;
+            BedTemperature = _bedTemp;
+        }
+    }
+
+    public class Spindle : ITool
+    {
+        string toolName = "";
+        string descriptions = "";
+        double diameter = 0;
+        double offsetX = 0;
+        double offsetY = 0;
+        double offsetZ = 0;
+        string toolChangeGCode = "";
+
+        public string ToolName { get { return toolName; } }
+        public string Descriptions { get { return descriptions; } set { descriptions = value; } }
+        public double OffsetX { get { return offsetX; } set { offsetX = value; } }
+        public double OffsetY { get { return offsetY; } set { offsetY = value; } }
+        public double OffsetZ { get { return offsetZ; } set { offsetZ = value; } }
+        public string ToolChangeGcode { get { return toolChangeGCode; } set { toolChangeGCode = value; } }
+        public Guid Guid => new Guid();
+
+        public double MaxSpeed { get; set; }
+        public double NorminalDiameter { get; set; }
+        public double PlungeRate { get; set; }
+        public double RetractRate { get; set; }
+        public Spindle() { }
+    }
+
+    public class GenericTool : ITool
+    {
+        string toolName = "";
+        string descriptions = "";
+        double diameter = 0;
+        double offsetX = 0;
+        double offsetY = 0;
+        double offsetZ = 0;
+        string toolChangeGCode = "";
+
+        public string ToolName { get { return toolName; } }
+        public string Descriptions { get { return descriptions; } set { descriptions = value; } }
+        public double OffsetX { get { return offsetX; } set { offsetX = value; } }
+        public double OffsetY { get { return offsetY; } set { offsetY = value; } }
+        public double OffsetZ { get { return offsetZ; } set { offsetZ = value; } }
+        public string ToolChangeGcode { get { return toolChangeGCode; } set { toolChangeGCode = value; } }
+        public Guid Guid => new Guid();
+    }
     /// <summary>
     /// Tools contains properties for milling and extruder, such as offset.
     /// </summary>
@@ -1055,7 +1175,8 @@ namespace Seastar.Core
         private double Aco; //CARRIAGE_HORIZONTAL_OFFSET
         //private double Hez; //Tool tip offset from end effector
         private double[] ColAngle = new double[3] { 210 * PI / 180, 330 * PI / 180, 90 * PI / 180 }; //column angle. See below
-
+        public string startCode = "";
+        public string endCode = "";
 
         public Machine()
         {

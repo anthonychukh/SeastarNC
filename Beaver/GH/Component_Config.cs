@@ -33,6 +33,8 @@ namespace SeastarGrasshopper
         {
         }
 
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
+
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
@@ -221,6 +223,8 @@ namespace SeastarGrasshopper
         {
         }
 
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
+
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
@@ -304,6 +308,8 @@ namespace SeastarGrasshopper
         {
         }
 
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
+
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             for (int i = 0; i < Enum.GetNames(typeof(Config.FilamentSetting)).Length; i++)
@@ -358,6 +364,8 @@ namespace SeastarGrasshopper
         {
         }
 
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
+
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             for (int i = 0; i < Enum.GetNames(typeof(Config.PrinterSetting)).Length; i++)
@@ -411,6 +419,8 @@ namespace SeastarGrasshopper
         {
         }
 
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
+
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             for (int i = 0; i < Enum.GetNames(typeof(Config.RouterSetting)).Length; i++)
@@ -463,6 +473,8 @@ namespace SeastarGrasshopper
               "Seastar", "01 | Config")
         {
         }
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
@@ -524,6 +536,8 @@ namespace SeastarGrasshopper
               "Seastar", "01 | Config")
         {
         }
+
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {

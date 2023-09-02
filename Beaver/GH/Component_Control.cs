@@ -33,17 +33,6 @@ namespace SerialComponentLibrary
         //public static Queue<string> recentSent = new Queue<string>();
         public static bool printerReady = false;
         public static int queueSize = 5;  //desire queue size in printer memory. Ready to send more when ok [N] = lastNsent - queueSize
-        public string initCode =
-            "M105 ; get extruder temp\n" +
-            "M114 ; get position\n" +
-            "T0\n" +
-            "M20 ; SD card\n" +
-            "M80 ; AXT power on\n" +
-            "M220 S100 ; speed factor override\n" +
-            "M221 S100 ; extrude factor override\n" +
-            "M111 S6 ; Debug level 6\n" +
-            "M155 S1 ; auto send temp\n" +
-            "G28;Home\n";
         public static string firmwareInfo = "";
 
         #endregion............................................................
@@ -58,7 +47,8 @@ namespace SerialComponentLibrary
         {
             pManager.AddTextParameter("Port", "P", "Port Name", GH_ParamAccess.item, "COM6");
             pManager.AddIntegerParameter("Baud", "B", "Baud Rate", GH_ParamAccess.item, 250000);
-            pManager.AddBooleanParameter("Open", "O", "Open Port", GH_ParamAccess.item, false);
+            pManager.AddGenericParameter("Machine", "M", "Machine from Create Machine component", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Start", "O", "Open Port", GH_ParamAccess.item, false);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -102,13 +92,15 @@ namespace SerialComponentLibrary
         {
             string port = null;
             int baud = 0;
+            Machine machine = null;
             bool open = false;
             string message = "";
             List<string> msgs = new List<string>();
 
             DA.GetData(0, ref port);
             DA.GetData(1, ref baud);
-            DA.GetData(2, ref open);
+            DA.GetData(2, ref machine);
+            DA.GetData(3, ref open);
 
             //before open and getting ready...........................................
             if (open == false && !thisPort.IsOpen) 
@@ -154,7 +146,7 @@ namespace SerialComponentLibrary
                         this.OnPingDocument().ScheduleSolution(500, CallBack); //wait for firmware info report back...
 
                     if (includeInitCode)
-                        SerialComponentLibrary.Add2Queue.AddToQueue(initCode, ref msgs); //send init code...
+                        SerialComponentLibrary.Add2Queue.AddToQueue(machine.startCode, ref msgs); //send init code...
 
                     message = "Machine connected.";
                     Connect.printerReady = true;
@@ -171,6 +163,8 @@ namespace SerialComponentLibrary
             //close port..............................................................
             else if (open == false && thisPort.IsOpen)  
             {
+                if (includeInitCode)
+                    SerialComponentLibrary.Add2Queue.AddToQueue(machine.endCode, ref msgs); //TODO see if it returns too fast.
                 ClosePort();
                 message = "Printer disconnected. Ready to connect again.\nAvailable port: " + GetPortNameMessage();
                 Seastar.Core.Extension.expireOthers("WriteQueue", this);

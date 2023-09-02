@@ -72,7 +72,7 @@ namespace SeastarGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Machine configuration", "M", "Machine configuration", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Machine", "M", "Machine object togather with all its configuration", GH_ParamAccess.item);
             pManager.AddBrepParameter("Volume", "V", "Machine working volume", GH_ParamAccess.item);
             pManager.AddTextParameter("Message", "msg", "Message and description of machine", GH_ParamAccess.item);
         }
@@ -90,10 +90,14 @@ namespace SeastarGrasshopper
             Interval z = new Interval();
             List<Tool> tools = new List<Tool>();
             RotationAxes rx = new RotationAxes();
+            string startCode = "";
+            string endCode = "";
 
             DA.GetData<string>(0, ref name);
             DA.GetData<Interval>(1, ref x);
             DA.GetData<Interval>(3, ref z);
+            DA.GetData("Start Gcode", ref startCode);
+            DA.GetData("End Gcode", ref endCode);
 
 
             DA.GetDataList<Tool>(4, tools);
@@ -105,7 +109,6 @@ namespace SeastarGrasshopper
 
 
             Machine mOut;
-           
 
             if(DA.GetData<Interval>(2, ref y)) //is carteasian
             {
@@ -114,18 +117,18 @@ namespace SeastarGrasshopper
             }
             else //is delta
             {
-                //mOut = new Machine(x, z, tools);
                 mOut = new Machine(x, z, 30.22, 200.0, 27.1, 290.8, tools, rx); //only default value WIP
             }
 
+            mOut.startCode = startCode; 
+            mOut.endCode = endCode;
+
             msg += "A Seastar Machine was successfully created\n";
-            //msg += mOut.rAxes.ToString();
 
             DA.SetData(0, new Config(mOut));
             DA.SetData(1, mOut.Volume);
             msg += mOut.ToString();
             DA.SetData(2, msg);
-
         }
 
         /// <summary>
@@ -142,6 +145,56 @@ namespace SeastarGrasshopper
         }
     }
 
+    /*
+     * filament_name,
+            filament_diameter,
+            retract_speed,
+            retract_length,
+            filament_density,
+            filament_cost,
+            disable_fan_first_layers,
+            temperature,
+            bed_temperature
+     */
+
+    public class FilamentCreate : GH_Component
+    {
+        public FilamentCreate()
+          : base("Create Filament", "Filament",
+              "Create filament that can be used by an extruder",
+              "Seastar", "02 | Machine")
+        {
+        }
+
+        protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
+        {
+            pManager.AddTextParameter("Name", "N", "Filament name.", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Diameter", "D", "Filament diameter.", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Temperature", "T", "Printing temperature", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Retract Speed", "RS", "Retraction speed for travel moves", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Retract Distance", "RD", "Retraction distance for travel moves", GH_ParamAccess.item);
+        }
+
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        {
+            pManager.AddGenericParameter("Filament", "F", "Filament object. Connect to Create Machine component.", GH_ParamAccess.item);
+        }
+
+        protected override void SolveInstance(IGH_DataAccess DA)
+        {
+
+        }
+
+        protected override System.Drawing.Bitmap Icon => Resources.joker;
+
+        public override Guid ComponentGuid
+        {
+            get { return new Guid("71ae0198-9661-47df-b6b6-891c29cb3346"); }
+        }
+    }
+
+    //TODO
+    // interpret filament input
     public class ToolCreateExtruder : GH_Component
     {
         /// <summary>
@@ -168,6 +221,7 @@ namespace SeastarGrasshopper
             pManager.AddNumberParameter("Y Offset", "oy", "Y offset distance", GH_ParamAccess.item);
             pManager.AddNumberParameter("Z Offset", "oz", "Z offset distance", GH_ParamAccess.item, 0);
             pManager.AddTextParameter("Tool Change Code", "tc", "Tool change Gcode as list", GH_ParamAccess.list, new List<string>());
+            pManager.AddGenericParameter("Filament", "f", "Filament this extruder can use", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -236,7 +290,7 @@ namespace SeastarGrasshopper
         {
         }
 
-        public override GH_Exposure Exposure => GH_Exposure.secondary;
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
 
         /// <summary>
         /// Registers all the input parameters for this component.
@@ -376,7 +430,7 @@ namespace SeastarGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("SPM Axes", "RA", "Seastar SPM Axes.\nConnect to Configuration", GH_ParamAccess.item);
+            pManager.AddGenericParameter("SPM Axes", "RA", "Seastar SPM Axes.\nConnect to Create Machine component.", GH_ParamAccess.item);
             pManager.AddNumberParameter("Rotational Input", "RI", "Absolute rotational input from motor", GH_ParamAccess.list);
             pManager.AddArcParameter("Linkage Arc", "AC", "Arc curve representing linkages", GH_ParamAccess.tree);
             pManager.AddVectorParameter("Axes", "AX", "Axes of the SPM", GH_ParamAccess.tree);
@@ -589,7 +643,7 @@ namespace SeastarGrasshopper
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("Spherical Axes", "RA", "Seastar Spherical Axes.\nConnect to Configuration", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Spherical Axes", "RA", "Seastar Spherical Axes.\nConnect to Create Machine component.", GH_ParamAccess.item);
             pManager.AddNumberParameter("Rotational Input", "RI", "Absolute rotational input of each axis", GH_ParamAccess.list);
             pManager.AddVectorParameter("Axes", "AX", "Axes of the spherical axes", GH_ParamAccess.list);
             

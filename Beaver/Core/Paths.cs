@@ -73,6 +73,39 @@ namespace Seastar.Core
     //    }
     //}
 
+    public interface IBlock
+    {
+        /// <summary> Move to location. </summary>
+        Plane Plane { get; set; }
+        /// <summary> Feed rate to move to location. </summary>
+        double FeedRate { get; set; }
+    }
+
+    public class LinearMoveBlock : IBlock
+    {
+        public Plane Plane { get; set; }
+        public double FeedRate { get; set; }
+
+    }
+
+    public class ExtrudeBlock : IBlock
+    {
+        public Plane Plane { get; set; }
+        public double FeedRate { get; set; }
+        public Extruder Tool { get; set; }
+        public double extrusionRate { get; set; }
+    }
+
+    public class MBlock : IBlock
+    {
+        public Plane Plane { get; set; }
+        public double FeedRate { get; set; }
+        public int M { get; set; }
+        public int? P { get; set; }
+        public int? S { get; set; }
+
+    }
+
     /// <summary>
     /// Contains location and speed, etc of gcode point ie each line of code.
     /// </summary>
@@ -86,7 +119,7 @@ namespace Seastar.Core
         public double? ER;        //Extrusion Rate mm3/min, can only calculate E from ERate between 2 points OR Speed if spindle
         public int? SS; //Spindle speed
         public int? G;
-        public int? T;  //tool to use
+        public int? T;  //tool to use TODO use ITool interface
         public List<int?> M = new List<int?>();  //List of M-command. P, S, Pin and PWM shoud have same length otherwise Null value
         public List<int?> P = new List<int?>();
         public List<int?> S = new List<int?>();
@@ -217,11 +250,6 @@ namespace Seastar.Core
             S = _S;
             P = _P;
         }
-
-        //public Block(int _E, int _S, int _T, int _A, int B, int _C)
-        //{
-
-        //}
 
         /// <summary>
         /// Append new M command to this block
